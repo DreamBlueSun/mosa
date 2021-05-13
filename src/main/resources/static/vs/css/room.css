@@ -1,0 +1,21 @@
+.vs-join-room {
+	margin-top: 5%;
+}
+
+.vs-play-room {
+	display: none;
+}
+
+.vs-now-player-point {
+	width: 24px;
+	height: 24px;
+	border-radius: 12px;
+	background: red;
+}
+
+.vs-now-player-text {
+	width: 56px;
+	margin-left: 32px;
+	line-height: 24px;
+	color: red;
+}
