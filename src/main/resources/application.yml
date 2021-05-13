@@ -1,0 +1,10 @@
+spring:
+  jmx:
+    enabled: false
+logging:
+  config: classpath:logback-spring.xml
+redis:
+  host: redis.maohangbin.com
+  port: 6379
+  password: 146408
+  timeout: 5000

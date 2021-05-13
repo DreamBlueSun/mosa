@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<script src="jquery/jquery-3.4.0.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="bootstrap/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+		<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+	</head>
+	<body>
+		<div class="container">
+			<div class="row clearfix">
+				<div class="col-md-4 col-md-offset-4" align="center">
+					<h1>NS家庭会员单人费用计算</h1>
+				</div>
+				<div class="col-md-4 col-md-offset-4 column">
+					<div class="form-group">
+						<label for="ns_r">家庭会员年费：</label>
+						<input type="number" class="form-control" id="ns_r" maxlength="3" placeholder="输入数字RMB" />
+					</div>
+					<div class="form-group">
+						<label for="ns_m">剩余月数：</label>
+						<input type="number" class="form-control" id="ns_m" maxlength="2" placeholder="输入数字月数" />
+					</div>
+					<div class="form-group">
+						<label for="ns_u">加入后成员数：</label>
+						<input type="number" class="form-control" id="ns_u" maxlength="1" placeholder="输入数字成员数" />
+					</div>
+					<button type="button" class="btn btn-primary btn-default btn-block" id="ns_count">计算</button>
+					<div class="form-group">
+						<label style="margin-top: 12px" id="ns_result"></label>
+					</div>
+				</div>
+			</div>
+		</div>
+        <script type="text/javascript" charset="utf-8">
+            $("#ns_count").click(function () {
+                var total = $("#ns_r").val();
+                var month = $("#ns_m").val();
+                var num = $("#ns_u").val();
+                if (total.length == 0) {
+                    $("#ns_result").css("color", "red");
+                    $("#ns_result").text("输入数字RMB");
+                } else if (month.length == 0) {
+                    $("#ns_result").css("color", "red");
+                    $("#ns_result").text("输入数字月数");
+                } else if (num.length == 0) {
+                    $("#ns_result").css("color", "red");
+                    $("#ns_result").text("输入数字成员数");
+                } else {
+                    var result = total * (month / 12) / num;
+                    $("#ns_result").css("color", "green");
+                    $("#ns_result").text("费用：" + result);
+                }
+            });
+        </script>
+	</body>
+</html>
