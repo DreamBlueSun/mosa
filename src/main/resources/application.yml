@@ -4,7 +4,24 @@ spring:
 logging:
   config: classpath:logback-spring.xml
 redis:
-  host: redis.maohangbin.com
-  port: 6379
-  password: 146408
-  timeout: 5000
+  password: mhb6810.
+  maxTotal: 100
+  maxIdle: 10
+  maxWaitMillis: 10000
+  testOnBorrow: true
+  connectionTimeout: 3000
+  soTimeout: 3000
+  maxAttempts: 5
+  jedisClusterNodes:
+  - ip: 152.136.225.204
+    port: 6380
+  - ip: 152.136.225.204
+    port: 6381
+  - ip: 152.136.225.204
+    port: 6382
+  - ip: 152.136.225.204
+    port: 6383
+  - ip: 152.136.225.204
+    port: 6384
+  - ip: 152.136.225.204
+    port: 6385
