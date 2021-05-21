@@ -9,6 +9,14 @@ import org.springframework.web.socket.WebSocketSession;
 public interface RoomService {
 
     /**
+     * 创建房间
+     *
+     * @param session session
+     * @return void
+     */
+    void createRoom(WebSocketSession session);
+
+    /**
      * 加入房间
      *
      * @param session session

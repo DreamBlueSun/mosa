@@ -1,4 +1,4 @@
-package com.mhb.mosa.util;
+package com.mhb.mosa.memory;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mhb.mosa.constant.ConstantVsScoket;
@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date: 2021/5/13 17:25
  */
 
-public class SessionUtils {
+public class SessionHome {
 
     /**
      * Map<sessionId, webSocketSession>
@@ -48,14 +48,14 @@ public class SessionUtils {
         return ScoketUtils.getAttributes(session, ConstantVsScoket.SESSION_ROOM_NAME);
     }
 
-    public static void sendMessage(WebSocketSession session, Object vo) throws IOException {
+    public static void sendMsg(WebSocketSession session, Object vo) throws IOException {
         String s = JSONObject.toJSONString(vo);
         session.sendMessage(new TextMessage(s));
     }
 
-    public static void sendMessage(List<Player> listPlayer, Object vo) throws IOException {
+    public static void sendMsg(List<Player> listPlayer, Object vo) throws IOException {
         for (Player p : listPlayer) {
-            sendMessage(get(p.getSessionId()), vo);
+            sendMsg(get(p.getSessionId()), vo);
         }
     }
 

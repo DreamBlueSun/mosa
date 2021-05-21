@@ -10,6 +10,11 @@ import org.springframework.web.socket.WebSocketSession;
 @Service
 public class RoomServiceImpl implements RoomService {
     @Override
+    public void createRoom(WebSocketSession session) {
+
+    }
+
+    @Override
     public void joinRoom(WebSocketSession session) {
 
     }
