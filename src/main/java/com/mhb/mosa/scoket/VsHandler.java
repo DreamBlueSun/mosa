@@ -1,5 +1,6 @@
 package com.mhb.mosa.scoket;
 
+import com.mhb.mosa.memory.PlayerHome;
 import com.mhb.mosa.memory.SessionHome;
 import com.mhb.mosa.service.LoginService;
 import com.mhb.mosa.service.PlayService;
@@ -64,7 +65,7 @@ public class VsHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        roomService.leaveRoom(session);
+        PlayerHome.get(session.getId()).afterConnectionClosed();
         loginService.out(session);
         super.afterConnectionClosed(session, status);
     }

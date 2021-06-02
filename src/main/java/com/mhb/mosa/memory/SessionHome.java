@@ -49,13 +49,16 @@ public class SessionHome {
     }
 
     public static void sendMsg(WebSocketSession session, Object vo) throws IOException {
-        String s = JSONObject.toJSONString(vo);
-        session.sendMessage(new TextMessage(s));
+        session.sendMessage(new TextMessage(JSONObject.toJSONString(vo)));
+    }
+
+    public static void sendMsg(Player player, Object vo) throws IOException {
+        sendMsg(get(player.getSessionId()), vo);
     }
 
     public static void sendMsg(List<Player> listPlayer, Object vo) throws IOException {
         for (Player p : listPlayer) {
-            sendMsg(get(p.getSessionId()), vo);
+            sendMsg(p, vo);
         }
     }
 

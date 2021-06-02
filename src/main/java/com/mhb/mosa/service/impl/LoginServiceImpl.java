@@ -1,5 +1,7 @@
 package com.mhb.mosa.service.impl;
 
+import com.mhb.mosa.entity.Player;
+import com.mhb.mosa.memory.PlayerHome;
 import com.mhb.mosa.memory.SessionHome;
 import com.mhb.mosa.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,8 @@ public class LoginServiceImpl implements LoginService {
         if (i == null) {
             jedisCluster.zadd(redisKeyZsetPlayerOnLine(), System.currentTimeMillis(), userName);
             SessionHome.put(session);
+            String sessionId = session.getId();
+            PlayerHome.put(sessionId, new Player(sessionId, userName));
             return true;
         }
         return false;
@@ -43,6 +47,8 @@ public class LoginServiceImpl implements LoginService {
     public void out(WebSocketSession session) {
         String userName = SessionHome.getUserName(session);
         jedisCluster.zrem(redisKeyZsetPlayerOnLine(), userName);
-        SessionHome.remove(session.getId());
+        String sessionId = session.getId();
+        SessionHome.remove(sessionId);
+        PlayerHome.remove(sessionId);
     }
 }
