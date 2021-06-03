@@ -2,12 +2,9 @@ package com.mhb.mosa.scoket;
 
 import com.mhb.mosa.memory.PlayerHome;
 import com.mhb.mosa.memory.SessionHome;
-import com.mhb.mosa.service.LoginService;
-import com.mhb.mosa.service.PlayService;
-import com.mhb.mosa.service.RoomService;
+import com.mhb.mosa.util.StaticUtils;
 import com.mhb.mosa.vo.TextMsgEnum;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -18,43 +15,23 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 @Component
 public class VsHandler extends TextWebSocketHandler {
 
-    @Autowired
-    public void setLoginService(LoginService loginService) {
-        VsHandler.loginService = loginService;
-    }
-    private static LoginService loginService;
-
-    @Autowired
-    public void setLoginService(RoomService roomService) {
-        VsHandler.roomService = roomService;
-    }
-    private static RoomService roomService;
-
-    @Autowired
-    public void setLoginService(PlayService playService) {
-        VsHandler.playService = playService;
-    }
-    private static PlayService playService;
-
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+    public void afterConnectionEstablished(WebSocketSession session) {
         boolean in = false;
         try {
-            in = loginService.in(session);
+            in = StaticUtils.loginService.in(session);
         } catch (Exception e) {
             log.error("登入异常：", e);
         }
         try {
             if (in) {
                 SessionHome.sendMsg(session, TextMsgEnum.LOGIN_OK);
-                super.afterConnectionEstablished(session);
             } else {
-                SessionHome.sendMsg(session,TextMsgEnum.LOGIN_FAIL);
+                SessionHome.sendMsg(session, TextMsgEnum.LOGIN_FAIL);
                 SessionHome.close(session);
             }
         } catch (Exception e) {
             log.error("连接socket异常：", e);
-            SessionHome.close(session);
         }
     }
 
@@ -64,10 +41,13 @@ public class VsHandler extends TextWebSocketHandler {
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        PlayerHome.get(session.getId()).afterConnectionClosed();
-        loginService.out(session);
-        super.afterConnectionClosed(session, status);
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+        try {
+            PlayerHome.get(session.getId()).afterConnectionClosed();
+            StaticUtils.loginService.out(session);
+        } catch (Exception e) {
+            log.error("关闭socket异常：", e);
+        }
     }
 
 

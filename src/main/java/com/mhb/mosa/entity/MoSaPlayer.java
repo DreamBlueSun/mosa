@@ -2,6 +2,7 @@ package com.mhb.mosa.entity;
 
 import com.mhb.mosa.memory.SessionHome;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.IOException;
 
@@ -9,6 +10,7 @@ import java.io.IOException;
  * @date: 2021/6/2 17:44
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class MoSaPlayer extends Player implements Comparable{
 
     /**
