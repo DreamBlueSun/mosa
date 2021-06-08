@@ -2,7 +2,6 @@ package com.mhb.mosa.memory;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mhb.mosa.constant.ConstantVsScoket;
-import com.mhb.mosa.entity.Player;
 import com.mhb.mosa.scoket.util.ScoketUtils;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -52,13 +51,13 @@ public class SessionHome {
         session.sendMessage(new TextMessage(JSONObject.toJSONString(vo)));
     }
 
-    public static void sendMsg(Player player, Object vo) throws IOException {
-        sendMsg(get(player.getSessionId()), vo);
+    public static void sendMsg(String sessionId, Object vo) throws IOException {
+        sendMsg(get(sessionId), vo);
     }
 
-    public static void sendMsg(List<Player> listPlayer, Object vo) throws IOException {
-        for (Player p : listPlayer) {
-            sendMsg(p, vo);
+    public static void sendMsg(List<String> listSessionId, Object vo) throws IOException {
+        for (String id : listSessionId) {
+            sendMsg(id, vo);
         }
     }
 

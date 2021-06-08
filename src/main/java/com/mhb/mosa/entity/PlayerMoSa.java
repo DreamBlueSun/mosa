@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class MoSaPlayer extends Player implements Comparable{
+public class PlayerMoSa extends Player implements Comparable {
 
     /**
      * 玩家所在房间
@@ -22,7 +22,7 @@ public class MoSaPlayer extends Player implements Comparable{
      **/
     private Integer index;
 
-    public MoSaPlayer(String sessionId, String userName, String roomName, Integer index) {
+    public PlayerMoSa(String sessionId, String userName, String roomName, Integer index) {
         super(sessionId, userName);
         this.roomName = roomName;
         this.index = index;
@@ -31,16 +31,17 @@ public class MoSaPlayer extends Player implements Comparable{
     @Override
     public void afterConnectionClosed() {
         try {
-            SessionHome.sendMsg(this,"msg");
+            SessionHome.sendMsg(getSessionId(), "连接丢失");
         } catch (IOException e) {
             e.printStackTrace();
         }
+        super.afterConnectionClosed();
     }
 
     @Override
     public int compareTo(Object o) {
-        if (o instanceof MoSaPlayer) {
-            return ((MoSaPlayer) o).index - this.index;
+        if (o instanceof PlayerMoSa) {
+            return ((PlayerMoSa) o).index - this.index;
         }
         return 1;
     }

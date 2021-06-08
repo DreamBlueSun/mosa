@@ -25,12 +25,8 @@ public class VsInterceptor extends HttpSessionHandshakeInterceptor {
         String requestUrl = request.getURI().toString();
         log.info("拦截器获取请求-URL：" + requestUrl);
         String userName = StringUtils.substring(requestUrl, requestUrl.lastIndexOf("/") + 1);
-        //截取请求Url最后参数上一个作为房间名
-        String urlExcludeUserName = StringUtils.substring(requestUrl, 0, requestUrl.lastIndexOf("/"));
-        String roomName = StringUtils.substring(urlExcludeUserName, urlExcludeUserName.lastIndexOf("/") + 1);
         //放入attributes
         String userNameDecode = URLDecoder.decode(userName, ConstantVsScoket.SESSION_CODING);
-        attributes.put(ConstantVsScoket.SESSION_ROOM_NAME, roomName);
         attributes.put(ConstantVsScoket.SESSION_USER_NAME, userNameDecode);
         return super.beforeHandshake(request, response, wsHandler, attributes);
     }

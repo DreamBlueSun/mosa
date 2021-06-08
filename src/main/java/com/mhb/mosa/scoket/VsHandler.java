@@ -1,9 +1,11 @@
 package com.mhb.mosa.scoket;
 
+import com.alibaba.fastjson.JSONObject;
+import com.mhb.mosa.entity.TextMsg;
+import com.mhb.mosa.entity.TextMsgEnum;
 import com.mhb.mosa.memory.PlayerHome;
 import com.mhb.mosa.memory.SessionHome;
 import com.mhb.mosa.util.StaticUtils;
-import com.mhb.mosa.vo.TextMsgEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -25,9 +27,9 @@ public class VsHandler extends TextWebSocketHandler {
         }
         try {
             if (in) {
-                SessionHome.sendMsg(session, TextMsgEnum.LOGIN_OK);
+                new TextMsg<Integer>(TextMsgEnum.LOGIN_O.getType(), TextMsgEnum.LOGIN_O.getMsg()).send(session);
             } else {
-                SessionHome.sendMsg(session, TextMsgEnum.LOGIN_FAIL);
+                new TextMsg<Integer>(TextMsgEnum.LOGIN_F.getType(), TextMsgEnum.LOGIN_F.getMsg()).send(session);
                 SessionHome.close(session);
             }
         } catch (Exception e) {
@@ -37,7 +39,18 @@ public class VsHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-        //TODO 交互
+        TextMsg textMsg = JSONObject.parseObject(new String(message.asBytes()), TextMsg.class);
+        TextMsgEnum textMsgEnum = TextMsgEnum.getInstance(textMsg.getType());
+        if (textMsgEnum == null) {
+            return;
+        }
+        switch (textMsgEnum) {
+            case CHAT:
+                //TODO 交互
+                break;
+            default:
+                break;
+        }
     }
 
     @Override

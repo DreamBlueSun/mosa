@@ -1,10 +1,10 @@
 var web_socket = null;
 
 // 初始化web_socket
-function initWebSocket(roomName, userName) {
+function initWebSocket(userName) {
     //判断浏览器是否支持web_socket
     if ('WebSocket' in window) {
-        var url = "ws://" + document.location.host + pathHead + "mosa/" + roomName + "/" + userName;
+        var url = "ws://" + document.location.host + pathHead + userName;
         console.log(url);
         web_socket = new WebSocket(url);
         web_socket.onopen = function () {
@@ -20,8 +20,8 @@ function initWebSocket(roomName, userName) {
         };
         web_socket.onmessage = function (message) {
             //处理服务器消息
-            var html = "<p>'+msg+'</p>";
-            $("#div_msg_list").append();
+            var html = '<p>'+message+'</p>';
+            $("#div_msg_list").append(html);
         }
     } else {
         alert("该换手机了。。。");
@@ -51,7 +51,7 @@ $(function () {
         }
         $("#div_joining").hide();
         $("#div_index").show();
-        initWebSocket(roomName, userName);
+        initWebSocket(userName);
     });
 
     //发送消息
