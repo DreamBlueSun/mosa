@@ -5,6 +5,7 @@ import com.mhb.mosa.entity.TextMsg;
 import com.mhb.mosa.entity.TextMsgEnum;
 import com.mhb.mosa.memory.PlayerHome;
 import com.mhb.mosa.memory.SessionHome;
+import com.mhb.mosa.scoket.util.PlayerConnectionUtils;
 import com.mhb.mosa.util.StaticUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -56,7 +57,7 @@ public class VsHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         try {
-            PlayerHome.get(session.getId()).afterConnectionClosed();
+            PlayerConnectionUtils.closed(PlayerHome.get(session.getId()));
             StaticUtils.loginService.out(session);
         } catch (Exception e) {
             log.error("关闭socket异常：", e);
