@@ -4,7 +4,7 @@ var web_socket = null;
 function initWebSocket(userName) {
     //判断浏览器是否支持web_socket
     if ('WebSocket' in window) {
-        var url = "ws://" + document.location.host + pathHead + userName;
+        var url = "ws://" + document.location.host + pathHead + "mosa/" + userName;
         console.log(url);
         web_socket = new WebSocket(url);
         web_socket.onopen = function () {
@@ -19,9 +19,7 @@ function initWebSocket(userName) {
             window.location.reload();
         };
         web_socket.onmessage = function (message) {
-            //处理服务器消息
-            var html = '<p>'+message+'</p>';
-            $("#div_msg_list").append(html);
+            onMessage(message.data);
         }
     } else {
         alert("该换手机了。。。");
@@ -40,6 +38,20 @@ window.onbeforeunload = function () {
     close();
 };
 
+//处理消息
+function onMessage(message) {
+    var vo = JSON.parse(message);
+    var type = vo.type;
+    var msg = vo.msg;
+    var data = vo.data;
+    if (type === 1) {
+        alert(msg);
+    } else if (type === 2) {
+        var html = '<p>' + msg + '</p>';
+        $("#div_msg_list").append(html);
+    }
+}
+
 $(function () {
 
     //加入房间
@@ -57,8 +69,8 @@ $(function () {
     //发送消息
     $("#send").click(function () {
         if (web_socket != null) {
-            var msg = $("#msg").val();
-            web_socket.send(msg);
+            var to = {type: "2", msg: $("#msg").val()};
+            web_socket.send(JSON.stringify(to));
         }
     });
 

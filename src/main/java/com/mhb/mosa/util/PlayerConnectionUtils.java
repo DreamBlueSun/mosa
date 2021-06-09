@@ -1,4 +1,4 @@
-package com.mhb.mosa.scoket.util;
+package com.mhb.mosa.util;
 
 import com.mhb.mosa.entity.PlayerConnection;
 

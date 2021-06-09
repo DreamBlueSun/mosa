@@ -1,18 +1,22 @@
 package com.mhb.mosa.scoket;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mhb.mosa.entity.TextMsg;
 import com.mhb.mosa.entity.TextMsgEnum;
 import com.mhb.mosa.memory.PlayerHome;
 import com.mhb.mosa.memory.SessionHome;
-import com.mhb.mosa.scoket.util.PlayerConnectionUtils;
+import com.mhb.mosa.util.PlayerConnectionUtils;
 import com.mhb.mosa.util.StaticUtils;
+import com.mhb.mosa.util.TextMsgFunctionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+
+import java.io.IOException;
 
 @Slf4j
 @Component
@@ -28,9 +32,9 @@ public class VsHandler extends TextWebSocketHandler {
         }
         try {
             if (in) {
-                new TextMsg<Integer>(TextMsgEnum.LOGIN_O.getType(), TextMsgEnum.LOGIN_O.getMsg()).send(session);
+                TextMsgFunctionUtils.send(new TextMsg<Integer>(TextMsgEnum.LOGIN_O.getType(), TextMsgEnum.LOGIN_O.getMsg()), session);
             } else {
-                new TextMsg<Integer>(TextMsgEnum.LOGIN_F.getType(), TextMsgEnum.LOGIN_F.getMsg()).send(session);
+                TextMsgFunctionUtils.send(new TextMsg<Integer>(TextMsgEnum.LOGIN_F.getType(), TextMsgEnum.LOGIN_F.getMsg()), session);
                 SessionHome.close(session);
             }
         } catch (Exception e) {
@@ -47,7 +51,12 @@ public class VsHandler extends TextWebSocketHandler {
         }
         switch (textMsgEnum) {
             case CHAT:
-                //TODO 交互
+                try {
+                    textMsg.setMsg(PlayerHome.get(session.getId()).getUserName() + "：" + textMsg.getMsg());
+                    TextMsgFunctionUtils.sendAll(textMsg, session);
+                } catch (IOException e) {
+                    log.error("发送聊天消息-" + JSON.toJSONString(textMsg) + "-异常：", e);
+                }
                 break;
             default:
                 break;
