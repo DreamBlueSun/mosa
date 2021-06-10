@@ -21,21 +21,21 @@ public class StaticUtils {
     public static JedisCluster jedisCluster;
 
     @Autowired
-    public void setLoginService(LinkService loginService) {
-        StaticUtils.linkService = loginService;
+    public void setLinkService(LinkService linkService) {
+        StaticUtils.linkService = linkService;
     }
 
     public static LinkService linkService;
 
     @Autowired
-    public void setLoginService(RoomService roomService) {
+    public void setRoomService(RoomService roomService) {
         StaticUtils.roomService = roomService;
     }
 
     public static RoomService roomService;
 
     @Autowired
-    public void setLoginService(PlayService playService) {
+    public void setPlayService(PlayService playService) {
         StaticUtils.playService = playService;
     }
 

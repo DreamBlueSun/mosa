@@ -1,10 +1,13 @@
 package com.mhb.mosa.entity;
 
 import com.mhb.mosa.memory.RoleHomeEnum;
+import com.mhb.mosa.memory.SessionHome;
 import lombok.Data;
+import java.io.IOException;
+import java.util.ArrayList;
 
 @Data
-public class Player implements PlayerConnection {
+public class Player implements PlayerConnection, TextMsgFunction {
 
     /**
      * 会话id
@@ -37,5 +40,15 @@ public class Player implements PlayerConnection {
     @Override
     public void afterConnectionClosed() {
         this.role.getRoleHome().remove(this.sessionId);
+    }
+
+    @Override
+    public void send(String msg) throws IOException {
+        SessionHome.sendMsg(SessionHome.get(this.sessionId), msg);
+    }
+
+    @Override
+    public void sendAll(String msg) throws IOException {
+        SessionHome.sendMsg(new ArrayList<>(this.role.getRoleHome().get()), msg);
     }
 }

@@ -1,8 +1,6 @@
 package com.mhb.mosa.util;
 
 import com.mhb.mosa.entity.TextMsgFunction;
-import org.springframework.web.socket.WebSocketSession;
-
 import java.io.IOException;
 
 /**
@@ -11,11 +9,11 @@ import java.io.IOException;
 
 public class TextMsgFunctionUtils {
 
-    public static void send(TextMsgFunction function, WebSocketSession session) throws IOException {
-        function.send(session);
+    public static void send(TextMsgFunction function, String msg) throws IOException {
+        function.send(msg);
     }
 
-    public static void sendAll(TextMsgFunction function, WebSocketSession session) throws IOException {
-        function.sendAll(session);
+    public static void sendAll(TextMsgFunction function, String msg) throws IOException {
+        function.sendAll(msg);
     }
 }

@@ -4,6 +4,7 @@ import com.mhb.mosa.entity.Player;
 import com.mhb.mosa.memory.PlayerHome;
 import com.mhb.mosa.memory.SessionHome;
 import com.mhb.mosa.service.LinkService;
+import com.mhb.mosa.task.LinkTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
@@ -31,10 +32,17 @@ public class LinkServiceImpl implements LinkService {
 
     @Override
     public boolean socketOn(WebSocketSession session) {
-        SessionHome.put(session);
-        String sessionId = session.getId();
-        PlayerHome.put(sessionId, new Player(sessionId, SessionHome.getUserName(session)));
-        return true;
+        String userName = SessionHome.getUserName(session);
+        LinkTask.removeListLogout(userName);
+        if (jedisCluster.zrank(redisKeyZsetPlayerOnLine(), userName) != null) {
+            String sessionId = session.getId();
+            if (PlayerHome.get(sessionId) == null) {
+                SessionHome.put(session);
+                PlayerHome.put(sessionId, new Player(sessionId, userName));
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -42,12 +50,12 @@ public class LinkServiceImpl implements LinkService {
         String sessionId = session.getId();
         SessionHome.remove(sessionId);
         PlayerHome.remove(sessionId);
+        LinkTask.putListLogout(SessionHome.getUserName(session));
     }
 
     @Override
     public boolean login(String userName) {
-        Long i = jedisCluster.zrank(redisKeyZsetPlayerOnLine(), userName);
-        if (i == null) {
+        if (jedisCluster.zrank(redisKeyZsetPlayerOnLine(), userName) == null) {
             jedisCluster.zadd(redisKeyZsetPlayerOnLine(), System.currentTimeMillis(), userName);
             return true;
         }

@@ -1,6 +1,5 @@
 package com.mhb.mosa.entity;
 
-import org.springframework.web.socket.WebSocketSession;
 import java.io.IOException;
 
 /**
@@ -9,8 +8,8 @@ import java.io.IOException;
 
 public interface TextMsgFunction {
 
-    void send(WebSocketSession session) throws IOException;
+    void send(String msg) throws IOException;
 
-    void sendAll(WebSocketSession session) throws IOException;
+    void sendAll(String msg) throws IOException;
 
 }

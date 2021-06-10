@@ -17,9 +17,4 @@ public class ConstantVsScoket {
      */
     public static final String SESSION_USER_NAME = "userName";
 
-    /**
-     * 会话中保存的房间名称
-     */
-    public static final String SESSION_ROOM_NAME = "roomName";
-
 }

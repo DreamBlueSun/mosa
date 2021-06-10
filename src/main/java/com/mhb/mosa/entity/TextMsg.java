@@ -1,19 +1,12 @@
 package com.mhb.mosa.entity;
 
-import com.mhb.mosa.memory.PlayerHome;
-import com.mhb.mosa.memory.SessionHome;
 import lombok.Data;
-import org.springframework.web.socket.WebSocketSession;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @date: 2021/6/8 16:40
  */
 @Data
-public class TextMsg<T> implements TextMsgFunction {
+public class TextMsg<T> {
     /**
      * 消息类型
      */
@@ -38,17 +31,5 @@ public class TextMsg<T> implements TextMsgFunction {
         this.type = type;
         this.msg = msg;
         this.data = data;
-    }
-
-    @Override
-    public void send(WebSocketSession session) throws IOException {
-        SessionHome.sendMsg(session, this);
-    }
-
-    @Override
-    public void sendAll(WebSocketSession session) throws IOException {
-        Player player = PlayerHome.get(session.getId());
-        List<String> list = new ArrayList<>(player.getRole().getRoleHome().get());
-        SessionHome.sendMsg(list, this);
     }
 }

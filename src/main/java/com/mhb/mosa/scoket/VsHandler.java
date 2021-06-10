@@ -2,6 +2,7 @@ package com.mhb.mosa.scoket;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.mhb.mosa.entity.Player;
 import com.mhb.mosa.entity.TextMsg;
 import com.mhb.mosa.entity.TextMsgEnum;
 import com.mhb.mosa.memory.PlayerHome;
@@ -24,21 +25,12 @@ public class VsHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        boolean in = false;
         try {
-            in = StaticUtils.linkService.socketOn(session);
-        } catch (Exception e) {
-            log.error("socket连接异常：", e);
-        }
-        try {
-            if (in) {
-                TextMsgFunctionUtils.send(new TextMsg<>(TextMsgEnum.LOGIN_O.getType(), TextMsgEnum.LOGIN_O.getMsg(), 1), session);
-            } else {
-                TextMsgFunctionUtils.send(new TextMsg<>(TextMsgEnum.LOGIN_F.getType(), TextMsgEnum.LOGIN_F.getMsg(), 0), session);
+            if (!StaticUtils.linkService.socketOn(session)) {
                 SessionHome.close(session);
             }
         } catch (Exception e) {
-            log.error("socket连接返回异常：", e);
+            log.error("socket连接异常：", e);
         }
     }
 
@@ -52,8 +44,9 @@ public class VsHandler extends TextWebSocketHandler {
         switch (textMsgEnum) {
             case CHAT:
                 try {
-                    textMsg.setMsg(PlayerHome.get(session.getId()).getUserName() + "：" + textMsg.getMsg());
-                    TextMsgFunctionUtils.sendAll(textMsg, session);
+                    Player player = PlayerHome.get(session.getId());
+                    textMsg.setMsg(player.getUserName() + "：" + textMsg.getMsg());
+                    TextMsgFunctionUtils.sendAll(player, JSON.toJSONString(textMsg));
                 } catch (IOException e) {
                     log.error("发送聊天消息-" + JSON.toJSONString(textMsg) + "-异常：", e);
                 }
@@ -66,7 +59,10 @@ public class VsHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         try {
-            PlayerConnectionUtils.closed(PlayerHome.get(session.getId()));
+            Player player = PlayerHome.get(session.getId());
+            if (player != null) {
+                PlayerConnectionUtils.closed(player);
+            }
             StaticUtils.linkService.socketOff(session);
         } catch (Exception e) {
             log.error("socket断开异常：", e);
