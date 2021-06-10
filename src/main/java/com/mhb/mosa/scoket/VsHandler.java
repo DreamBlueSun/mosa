@@ -26,19 +26,19 @@ public class VsHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) {
         boolean in = false;
         try {
-            in = StaticUtils.loginService.in(session);
+            in = StaticUtils.linkService.socketOn(session);
         } catch (Exception e) {
-            log.error("登入异常：", e);
+            log.error("socket连接异常：", e);
         }
         try {
             if (in) {
-                TextMsgFunctionUtils.send(new TextMsg<Integer>(TextMsgEnum.LOGIN_O.getType(), TextMsgEnum.LOGIN_O.getMsg()), session);
+                TextMsgFunctionUtils.send(new TextMsg<>(TextMsgEnum.LOGIN_O.getType(), TextMsgEnum.LOGIN_O.getMsg(), 1), session);
             } else {
-                TextMsgFunctionUtils.send(new TextMsg<Integer>(TextMsgEnum.LOGIN_F.getType(), TextMsgEnum.LOGIN_F.getMsg()), session);
+                TextMsgFunctionUtils.send(new TextMsg<>(TextMsgEnum.LOGIN_F.getType(), TextMsgEnum.LOGIN_F.getMsg(), 0), session);
                 SessionHome.close(session);
             }
         } catch (Exception e) {
-            log.error("连接socket异常：", e);
+            log.error("socket连接返回异常：", e);
         }
     }
 
@@ -67,9 +67,9 @@ public class VsHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         try {
             PlayerConnectionUtils.closed(PlayerHome.get(session.getId()));
-            StaticUtils.loginService.out(session);
+            StaticUtils.linkService.socketOff(session);
         } catch (Exception e) {
-            log.error("关闭socket异常：", e);
+            log.error("socket断开异常：", e);
         }
     }
 

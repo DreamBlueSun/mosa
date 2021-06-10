@@ -1,6 +1,6 @@
 package com.mhb.mosa.util;
 
-import com.mhb.mosa.service.LoginService;
+import com.mhb.mosa.service.LinkService;
 import com.mhb.mosa.service.PlayService;
 import com.mhb.mosa.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +21,11 @@ public class StaticUtils {
     public static JedisCluster jedisCluster;
 
     @Autowired
-    public void setLoginService(LoginService loginService) {
-        StaticUtils.loginService = loginService;
+    public void setLoginService(LinkService loginService) {
+        StaticUtils.linkService = loginService;
     }
 
-    public static LoginService loginService;
+    public static LinkService linkService;
 
     @Autowired
     public void setLoginService(RoomService roomService) {
