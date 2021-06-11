@@ -27,6 +27,42 @@ public enum TextMsgEnumMosa implements Handle {
         public void execute(WebSocketSession session, TextMessage message) {
 
         }
+    },
+    /**
+     * 离开房间
+     */
+    LEAVE_ROOM(2) {
+        @Override
+        public void execute(WebSocketSession session, TextMessage message) {
+
+        }
+    },
+    /**
+     * 准备就绪
+     */
+    ROUND_READY(3) {
+        @Override
+        public void execute(WebSocketSession session, TextMessage message) {
+
+        }
+    },
+    /**
+     * 打出卡牌
+     */
+    PLAY_OUT(4) {
+        @Override
+        public void execute(WebSocketSession session, TextMessage message) {
+
+        }
+    },
+    /**
+     * 抽取卡牌
+     */
+    DRAW_CARD(5) {
+        @Override
+        public void execute(WebSocketSession session, TextMessage message) {
+
+        }
     };
 
     /**

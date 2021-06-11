@@ -50,8 +50,6 @@ public class LinkTask {
 
     }
 
-    private final static String REDIS_KEY_STRING_LOGOUT_LAST_TIME = "r:k:string:logout:l:t";
-
     private final static String REDIS_KEY_LIST_LOGOUT = "r:k:list:logout";
 
     public static void putListLogout(String userName) {
