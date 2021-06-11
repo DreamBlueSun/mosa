@@ -10,6 +10,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.Tuple;
+
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,15 +39,7 @@ public class LinkTask {
      */
     @Scheduled(fixedDelay = 5000)
     private void logout() {
-        long last, now = System.currentTimeMillis() - 5000;
-        String time = StaticUtils.jedisCluster.get(REDIS_KEY_STRING_LOGOUT_LAST_TIME);
-        if (time != null) {
-            last = Long.parseLong(time);
-        } else {
-            last = now - 10000;
-        }
-        StaticUtils.jedisCluster.set(REDIS_KEY_STRING_LOGOUT_LAST_TIME, String.valueOf(now));
-        Set<Tuple> tuples = StaticUtils.jedisCluster.zrangeByScoreWithScores(REDIS_KEY_LIST_LOGOUT, last, now);
+        Set<Tuple> tuples = StaticUtils.jedisCluster.zrangeByScoreWithScores(REDIS_KEY_LIST_LOGOUT, 0, System.currentTimeMillis() - 5000);
         if (!CollectionUtils.isEmpty(tuples)) {
             List<String> list = tuples.stream().map(Tuple::getElement).collect(Collectors.toList());
             StaticUtils.jedisCluster.zrem(REDIS_KEY_LIST_LOGOUT, list.toArray(new String[]{}));

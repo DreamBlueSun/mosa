@@ -5,14 +5,18 @@ import com.mhb.mosa.memory.PlayerHome;
 import com.mhb.mosa.memory.SessionHome;
 import com.mhb.mosa.service.LinkService;
 import com.mhb.mosa.task.LinkTask;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 import redis.clients.jedis.JedisCluster;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @date: 2021/5/21 15:32
  */
+@Slf4j
 @Service
 public class LinkServiceImpl implements LinkService {
 
@@ -28,6 +32,20 @@ public class LinkServiceImpl implements LinkService {
      */
     private String redisKeyZsetPlayerOnLine() {
         return "r:k:zset:p:o:l";
+    }
+
+    @PostConstruct
+    private void initZsetPlayerOnLine() {
+        try {
+            jedisCluster.del(redisKeyZsetPlayerOnLine());
+        } catch (Exception e1) {
+            log.error("初始化在线玩家集合-1次-异常：", e1);
+            try {
+                jedisCluster.del(redisKeyZsetPlayerOnLine());
+            } catch (Exception e2) {
+                log.error("初始化在线玩家集合-2次-异常：", e2);
+            }
+        }
     }
 
     @Override

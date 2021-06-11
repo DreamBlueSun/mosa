@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 @Data
-public class Player implements PlayerConnection, TextMsgFunction {
+public class Player implements PlayerConnection, ChatFunction {
 
     /**
      * 会话id

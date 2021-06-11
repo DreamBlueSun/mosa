@@ -1,54 +1,47 @@
 package com.mhb.mosa.entity;
 
+import com.mhb.mosa.scoket.Handle;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @date: 2021/5/21 18:05
  */
-
+@Slf4j
 public enum TextMsgEnum {
     /**
-     * 登入成功
+     * 聊天
      */
-    LOGIN_O(1, "登入成功"),
+    CHAT(2) {
+        @Override
+        public Handle next(int type) {
+            return TextMsgEnumChat.getInstance(type);
+        }
+    },
     /**
-     * 登入失败
+     * MoSa
      */
-    LOGIN_F(1, "登入失败"),
-    /**
-     * 发送聊天消息
-     */
-    CHAT(2);
+    MOSA(3) {
+        @Override
+        Handle next(int type) {
+            return TextMsgEnumMosa.getInstance(type);
+        }
+    };
 
     /**
-     * 消息类型
+     * 模块
      */
-    private int type;
+    private int module;
 
-    /**
-     * 消息内容
-     */
-    private String msg;
-
-    TextMsgEnum(int type) {
-        this.type = type;
+    TextMsgEnum(int module) {
+        this.module = module;
     }
 
-    TextMsgEnum(int type, String msg) {
-        this.type = type;
-        this.msg = msg;
-    }
+    abstract Handle next(int type);
 
-    public int getType() {
-        return type;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public static TextMsgEnum getInstance(int type) {
+    public static Handle getHandle(int module, int type) {
         for (TextMsgEnum value : TextMsgEnum.values()) {
-            if (value.type == type) {
-                return value;
+            if (value.module == module) {
+                return value.next(type);
             }
         }
         return null;
