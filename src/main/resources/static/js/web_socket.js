@@ -37,3 +37,7 @@ function close() {
 window.onbeforeunload = function () {
     close();
 };
+
+$(function () {
+    initWebSocket(getCookie("userName"));
+});

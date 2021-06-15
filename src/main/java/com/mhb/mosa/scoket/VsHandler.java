@@ -10,14 +10,12 @@ import com.mhb.mosa.scoket.util.HandleUtils;
 import com.mhb.mosa.util.PlayerConnectionUtils;
 import com.mhb.mosa.util.StaticUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 @Slf4j
-@Component
 public class VsHandler extends TextWebSocketHandler {
 
     @Override

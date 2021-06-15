@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MoSa</title>
+    <meta charset="utf-8" name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script src="../../jquery/jquery-3.4.0.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../bootstrap/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/path.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/cookie.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/web_socket.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/mosa.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/room.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/vs.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="../../bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/vs.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/room.css"/>
+</head>
+<body>
+<!-- 场次信息 -->
+<input type="hidden" id="round"/>
+<input type="hidden" id="round_is_start" value="0"/>
+<input type="hidden" id="user_sequence"/>
+<input type="hidden" id="index"/>
+<input type="hidden" id="rule"/>
+<!-- 房间UI -->
+<div id="div_vs_playing">
+    <div class="vs-player-other-first">
+        <table class="vs-player-info" border="0">
+            <tr>
+                <td rowspan="3">
+                    <img class="vs-img-player-head" src="../img/head-default.jpg"/>
+                </td>
+                <td>
+                    <div id="vs_now_player_1" style="display: none;">
+                        <div class="vs-now-player-point"></div>
+                        <p class="vs-now-player-text">当前位置</p>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td id="td_name_1"></td>
+            </tr>
+            <tr>
+                <td id="td_cards_1"></td>
+            </tr>
+        </table>
+    </div>
+    <div class="vs-player-other-second">
+        <table class="vs-player-info" border="0">
+            <tr>
+                <td rowspan="3">
+                    <img class="vs-img-player-head" src="../img/head-default.jpg"/>
+                </td>
+                <td>
+                    <div id="vs_now_player_2" style="display: none;">
+                        <div class="vs-now-player-point"></div>
+                        <p class="vs-now-player-text">当前位置</p>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td id="td_name_2"></td>
+            </tr>
+            <tr>
+                <td id="td_cards_2"></td>
+            </tr>
+        </table>
+    </div>
+    <div class="vs-player-other-thirdly">
+        <table class="vs-player-info" border="0">
+            <tr>
+                <td rowspan="3">
+                    <img class="vs-img-player-head" src="../img/head-default.jpg"/>
+                </td>
+                <td>
+                    <div id="vs_now_player_3" style="display: none;">
+                        <div class="vs-now-player-point"></div>
+                        <p class="vs-now-player-text">当前位置</p>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td id="td_name_3"></td>
+            </tr>
+            <tr>
+                <td id="td_cards_3"></td>
+            </tr>
+        </table>
+    </div>
+    <div class="vs-player-own">
+        <table class="vs-player-info" border="0">
+            <tr>
+                <td rowspan="3">
+                    <img class="vs-img-player-head" src="../img/head-default.jpg"/>
+                </td>
+                <td>
+                    <div id="vs_now_player_0" style="display: none;">
+                        <div class="vs-now-player-point"></div>
+                        <p class="vs-now-player-text">当前位置</p>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td id="td_name_0"></td>
+            </tr>
+            <tr>
+                <td id="td_cards_0"></td>
+            </tr>
+        </table>
+    </div>
+    <div class="vs-table-card">
+        <img id="round_properties" class="vs-img-round-properties" src=""/>
+        <img id="card_out" class="vs-img-card-out" src=""/>
+    </div>
+    <div class="vs-table-direction">
+        <img id="vs_direction" class="vs-img-direction" style="display: block;" src="../img/direction-1.png"/>
+    </div>
+    <div class="vs-table-library">
+        <img id="card_library" class="vs-img-card-library" src="../img/card-library.png"/>
+    </div>
+    <div id="div_hand_cards" class="vs-player-card">
+        <img id="hand_card_0" name="handCard" cardIndex="0" class="vs-img-card-hand" src=""/>
+        <img id="hand_card_1" name="handCard" cardIndex="1" class="vs-img-card-hand" src=""/>
+        <img id="hand_card_2" name="handCard" cardIndex="2" class="vs-img-card-hand" src=""/>
+        <img id="hand_card_3" name="handCard" cardIndex="3" class="vs-img-card-hand" src=""/>
+        <img id="hand_card_4" name="handCard" cardIndex="4" class="vs-img-card-hand" src=""/>
+        <img id="hand_card_5" name="handCard" cardIndex="5" class="vs-img-card-hand" src=""/>
+        <img id="hand_card_6" name="handCard" cardIndex="6" class="vs-img-card-hand" src=""/>
+        <img id="hand_card_7" name="handCard" cardIndex="7" class="vs-img-card-hand" src=""/>
+        <img id="hand_card_8" name="handCard" cardIndex="8" class="vs-img-card-hand" src=""/>
+        <img id="hand_card_9" name="handCard" cardIndex="9" class="vs-img-card-hand" src=""/>
+        <img id="hand_card_10" name="handCard" cardIndex="10" class="vs-img-card-hand" src=""/>
+        <img id="hand_card_11" name="handCard" cardIndex="11" class="vs-img-card-hand" src=""/>
+        <img id="hand_card_12" name="handCard" cardIndex="12" class="vs-img-card-hand" src=""/>
+        <img id="hand_card_13" name="handCard" cardIndex="13" class="vs-img-card-hand" src=""/>
+        <img id="hand_card_14" name="handCard" cardIndex="14" class="vs-img-card-hand" src=""/>
+    </div>
+</div>
+<!-- 棱镜弹窗 -->
+<a id="modal-966556" href="#modal-container-966556" role="button" class="btn" data-toggle="modal"
+   style="display: none;"></a>
+<div data-backdrop="static" class="modal fade" id="modal-container-966556" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" style="margin-top: 10%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabelPrism">
+                    请选择-->将场上属性改变为：
+                </h4>
+            </div>
+            <div class="modal-body" style="height: 248px;">
+                <img class="col-md-4" data-dismiss="modal" onclick="cardSkillPrism(0)" src="../img/card/A1.png"/>
+                <img class="col-md-4" data-dismiss="modal" onclick="cardSkillPrism(1)" src="../img/card/A2.png"/>
+                <img class="col-md-4" data-dismiss="modal" onclick="cardSkillPrism(2)" src="../img/card/A3.png"/>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 提示信息弹窗 -->
+<a id="modal-936584" href="#modal-container-936584" role="button" class="btn" data-toggle="modal"
+   style="display: none;"></a>
+<div class="modal fade" id="modal-container-936584" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="margin-top: 10%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabelMessage">
+                    提示信息
+                </h4>
+            </div>
+            <div id="message_modal" class="modal-body" style="height: 248px;"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
