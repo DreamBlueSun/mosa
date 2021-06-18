@@ -1,6 +1,6 @@
 package com.mhb.mosa.scoket;
 
-import com.mhb.mosa.constant.ConstantVsScoket;
+import com.mhb.mosa.constant.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.server.ServerHttpRequest;
@@ -21,13 +21,15 @@ import java.util.Map;
 public class VsInterceptor extends HttpSessionHandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-        //截取请求Url最后参数作为用户名
         String requestUrl = request.getURI().toString();
         log.info("拦截器获取请求-URL：" + requestUrl);
+        //截取请求Url最后参数上一个作为请求模块id
+        String urlExcludeUserName = StringUtils.substring(requestUrl, 0, requestUrl.lastIndexOf("/"));
+        String role = StringUtils.substring(urlExcludeUserName, urlExcludeUserName.lastIndexOf("/") + 1);
+        attributes.put(Constants.SESSION_ROLE, role);
+        //截取请求Url最后参数作为用户名
         String userName = StringUtils.substring(requestUrl, requestUrl.lastIndexOf("/") + 1);
-        //放入attributes
-        String userNameDecode = URLDecoder.decode(userName, ConstantVsScoket.SESSION_CODING);
-        attributes.put(ConstantVsScoket.SESSION_USER_NAME, userNameDecode);
+        attributes.put(Constants.SESSION_USER_NAME, URLDecoder.decode(userName, "UTF-8"));
         return super.beforeHandshake(request, response, wsHandler, attributes);
     }
 

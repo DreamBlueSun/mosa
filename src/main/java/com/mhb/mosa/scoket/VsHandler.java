@@ -5,6 +5,7 @@ import com.mhb.mosa.entity.Player;
 import com.mhb.mosa.entity.TextMsg;
 import com.mhb.mosa.entity.TextMsgEnum;
 import com.mhb.mosa.memory.PlayerHome;
+import com.mhb.mosa.memory.RoleHomeEnum;
 import com.mhb.mosa.memory.SessionHome;
 import com.mhb.mosa.scoket.util.HandleUtils;
 import com.mhb.mosa.util.PlayerConnectionUtils;
@@ -21,7 +22,13 @@ public class VsHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         try {
-            if (!StaticUtils.linkService.socketOn(session)) {
+            if (StaticUtils.linkService.socketOn(session)) {
+                RoleHomeEnum instance = RoleHomeEnum.getInstance(SessionHome.getRole(session));
+                if (instance != null) {
+                    Player player = instance.newPlayer(session.getId(), SessionHome.getUserName(session));
+                    PlayerConnectionUtils.enabled(player);
+                }
+            } else {
                 SessionHome.close(session);
             }
         } catch (Exception e) {

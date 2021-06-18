@@ -1,6 +1,6 @@
 package com.mhb.mosa.memory;
 
-import com.mhb.mosa.constant.ConstantVsScoket;
+import com.mhb.mosa.constant.Constants;
 import com.mhb.mosa.scoket.util.ScoketUtils;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -38,8 +38,12 @@ public class SessionHome {
         session.close();
     }
 
+    public static int getRole(WebSocketSession session) {
+        return Integer.parseInt(ScoketUtils.getAttributes(session, Constants.SESSION_ROLE));
+    }
+
     public static String getUserName(WebSocketSession session) {
-        return ScoketUtils.getAttributes(session, ConstantVsScoket.SESSION_USER_NAME);
+        return ScoketUtils.getAttributes(session, Constants.SESSION_USER_NAME);
     }
 
     public static void sendMsg(WebSocketSession session, String msg) throws IOException {

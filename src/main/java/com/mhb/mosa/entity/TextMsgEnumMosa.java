@@ -26,7 +26,6 @@ public enum TextMsgEnumMosa implements Handle {
             try {
                 TextMsg msg = JSONObject.parseObject(json, TextMsg.class);
                 Player player = PlayerHome.get(session.getId());
-                //TODO 创建房间
                 ChatFunctionUtils.send(player, JSON.toJSONString(msg));
             } catch (IOException e) {
                 log.error("创建房间-" + json + "-异常：", e);

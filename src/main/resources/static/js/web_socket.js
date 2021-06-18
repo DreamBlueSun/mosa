@@ -1,10 +1,10 @@
 var web_socket = null;
 
 // 初始化web_socket
-function initWebSocket(userName) {
+function initWebSocket(role, userName) {
     //判断浏览器是否支持web_socket
     if ('WebSocket' in window) {
-        var url = "ws://" + document.location.host + pathHead + "mosa/" + userName;
+        var url = "ws://" + document.location.host + pathHead + "mosa/" + role + "/" + userName;
         console.log(url);
         web_socket = new WebSocket(url);
         web_socket.onopen = function () {
@@ -37,7 +37,3 @@ function close() {
 window.onbeforeunload = function () {
     close();
 };
-
-$(function () {
-    initWebSocket(getCookie("userName"));
-});

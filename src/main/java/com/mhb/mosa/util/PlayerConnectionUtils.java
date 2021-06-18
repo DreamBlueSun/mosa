@@ -8,6 +8,10 @@ import com.mhb.mosa.entity.PlayerConnection;
 
 public class PlayerConnectionUtils {
 
+    public static void enabled(PlayerConnection connection){
+        connection.afterConnectionEstablished();
+    }
+
     public static void closed(PlayerConnection connection){
         connection.afterConnectionClosed();
     }

@@ -1,8 +1,6 @@
 package com.mhb.mosa.util;
 
-import com.mhb.mosa.service.LinkService;
-import com.mhb.mosa.service.PlayService;
-import com.mhb.mosa.service.RoomService;
+import com.mhb.mosa.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisCluster;
@@ -21,11 +19,32 @@ public class StaticUtils {
     public static JedisCluster jedisCluster;
 
     @Autowired
+    public void setJedisUtils(JedisUtils jedisUtils) {
+        StaticUtils.jedisUtils = jedisUtils;
+    }
+
+    public static JedisUtils jedisUtils;
+
+    @Autowired
     public void setLinkService(LinkService linkService) {
         StaticUtils.linkService = linkService;
     }
 
     public static LinkService linkService;
+
+    @Autowired
+    public void setPlayerService(PlayerService playerService) {
+        StaticUtils.playerService = playerService;
+    }
+
+    public static PlayerService playerService;
+
+    @Autowired
+    public void setMosaService(MosaService mosaService) {
+        StaticUtils.mosaService = mosaService;
+    }
+
+    public static MosaService mosaService;
 
     @Autowired
     public void setRoomService(RoomService roomService) {

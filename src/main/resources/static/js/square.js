@@ -1,5 +1,9 @@
 $(function () {
 
+    var userName = getCookie("userName");
+
+    initWebSocket("2", userName);
+
     //发送消息
     $("#send").click(function () {
         if (web_socket != null) {
@@ -10,10 +14,34 @@ $(function () {
 
     //创建MoSa房间
     $("#create_mosa").click(function () {
-        if (web_socket != null) {
-            var to = {module: "3", type: "0"};
-            web_socket.send(JSON.stringify(to));
-        }
+        $.ajax({
+            url: pathHead + "mosa/room/create/" + userName,
+            type: "get",
+            success: function (data) {
+                alert(data.msg);
+                if (data.code === "0000") {
+                    window.location.href = "vs/html/mosa.html";
+                }
+            }, error: function () {
+                alert("发生错误");
+            }
+        });
+    });
+
+    //加入MoSa房间
+    $("#join_mosa").click(function () {
+        $.ajax({
+            url: pathHead + "mosa/room/join/" + $("#room_id").val() + "/" + userName,
+            type: "get",
+            success: function (data) {
+                alert(data.msg);
+                if (data.code === "0000") {
+                    window.location.href = "vs/html/mosa.html";
+                }
+            }, error: function () {
+                alert("发生错误");
+            }
+        });
     });
 });
 
@@ -26,7 +54,5 @@ function onMessage(message) {
     if (module === 2 && type === 0) {
         var html = '<p>' + data + '</p>';
         $("#div_msg_list").append(html);
-    } else if (module === 3 && type === 0) {
-        window.location.href = "vs/html/mosa.html";
     }
 }

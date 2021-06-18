@@ -1,3 +1,7 @@
+$(function () {
+    initWebSocket("3", getCookie("userName"));
+});
+
 //处理服务器消息
 function onMessage(message) {
     var vo = JSON.parse(message);

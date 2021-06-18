@@ -1,7 +1,5 @@
 package com.mhb.mosa.service.impl;
 
-import com.mhb.mosa.entity.Player;
-import com.mhb.mosa.memory.PlayerHome;
 import com.mhb.mosa.memory.SessionHome;
 import com.mhb.mosa.service.LinkService;
 import com.mhb.mosa.task.LinkTask;
@@ -38,13 +36,8 @@ public class LinkServiceImpl implements LinkService {
     private void initZsetPlayerOnLine() {
         try {
             jedisCluster.del(redisKeyZsetPlayerOnLine());
-        } catch (Exception e1) {
-            log.error("初始化在线玩家集合-1次-异常：", e1);
-            try {
-                jedisCluster.del(redisKeyZsetPlayerOnLine());
-            } catch (Exception e2) {
-                log.error("初始化在线玩家集合-2次-异常：", e2);
-            }
+        } catch (Exception e) {
+            log.error("初始化在线玩家集合-异常：", e);
         }
     }
 
@@ -53,12 +46,8 @@ public class LinkServiceImpl implements LinkService {
         String userName = SessionHome.getUserName(session);
         LinkTask.removeListLogout(userName);
         if (jedisCluster.zrank(redisKeyZsetPlayerOnLine(), userName) != null) {
-            String sessionId = session.getId();
-            if (PlayerHome.get(sessionId) == null) {
-                SessionHome.put(session);
-                PlayerHome.put(sessionId, new Player(sessionId, userName));
-                return true;
-            }
+            SessionHome.put(session);
+            return true;
         }
         return false;
     }
@@ -67,7 +56,6 @@ public class LinkServiceImpl implements LinkService {
     public void socketOff(WebSocketSession session) {
         String sessionId = session.getId();
         SessionHome.remove(sessionId);
-        PlayerHome.remove(sessionId);
         LinkTask.putListLogout(SessionHome.getUserName(session));
     }
 

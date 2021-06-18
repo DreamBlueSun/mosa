@@ -9,6 +9,13 @@ package com.mhb.mosa.entity;
 public interface PlayerConnection {
 
     /**
+     * 用户连接成功后执行的方法
+     *
+     * @return void
+     */
+    void afterConnectionEstablished();
+
+    /**
      * 用户断开连接后执行的方法
      *
      * @return void
