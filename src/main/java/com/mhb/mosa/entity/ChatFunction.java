@@ -12,4 +12,6 @@ public interface ChatFunction {
 
     void sendAll(String msg) throws IOException;
 
+    void sendOther(String msg) throws IOException;
+
 }

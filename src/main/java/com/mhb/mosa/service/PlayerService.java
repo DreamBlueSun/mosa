@@ -15,7 +15,7 @@ public interface PlayerService {
      * @param clazz    类
      * @return T
      */
-    <T> T getPlayer(String userName, Class<T> clazz);
+    <T> T get(String userName, Class<T> clazz);
 
     /**
      * 获取指定类型的player的某些字段
@@ -24,6 +24,6 @@ public interface PlayerService {
      * @param fields   字段名称数组
      * @return java.util.List<java.lang.String>
      */
-    List<String> getPlayer(String userName, String[] fields);
+    List<String> getProperties(String userName, String... fields);
 
 }

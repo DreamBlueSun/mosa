@@ -32,7 +32,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public <T> T getPlayer(String userName, Class<T> clazz) {
+    public <T> T get(String userName, Class<T> clazz) {
         Map<String, String> map = jedisCluster.hgetAll(redisKeyHashPlayerInfo(userName));
         if (CollectionUtils.isEmpty(map)) {
             return null;
@@ -41,7 +41,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public List<String> getPlayer(String userName, String[] fields) {
+    public List<String> getProperties(String userName, String... fields) {
         List<String> list = jedisCluster.hmget(redisKeyHashPlayerInfo(userName), fields);
         if (CollectionUtils.isEmpty(list)) {
             return null;

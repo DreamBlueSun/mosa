@@ -4,6 +4,7 @@ import com.mhb.mosa.memory.PlayerHome;
 import com.mhb.mosa.memory.RoleHomeEnum;
 import com.mhb.mosa.memory.SessionHome;
 import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,5 +59,14 @@ public class Player implements PlayerConnection, ChatFunction {
     @Override
     public void sendAll(String msg) throws IOException {
         SessionHome.sendMsg(new ArrayList<>(this.role.getRoleHome().get()), msg);
+    }
+
+    @Override
+    public void sendOther(String msg) throws IOException {
+        ArrayList<String> list = new ArrayList<>(this.role.getRoleHome().get());
+        list.remove(this.userName);
+        if (CollectionUtils.isNotEmpty(list)) {
+            SessionHome.sendMsg(list, msg);
+        }
     }
 }

@@ -44,10 +44,12 @@ public class LinkServiceImpl implements LinkService {
     @Override
     public boolean socketOn(WebSocketSession session) {
         String userName = SessionHome.getUserName(session);
-        LinkTask.removeListLogout(userName);
-        if (jedisCluster.zrank(redisKeyZsetPlayerOnLine(), userName) != null) {
-            SessionHome.put(session);
-            return true;
+        if (userName.length() > 1) {
+            LinkTask.removeListLogout(userName);
+            if (jedisCluster.zrank(redisKeyZsetPlayerOnLine(), userName) != null) {
+                SessionHome.put(session);
+                return true;
+            }
         }
         return false;
     }

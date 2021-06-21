@@ -5,6 +5,7 @@ import com.mhb.mosa.entity.RoomMosa;
 import com.mhb.mosa.service.MosaService;
 import com.mhb.mosa.util.JedisUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.JedisCluster;
@@ -12,6 +13,7 @@ import redis.clients.jedis.JedisCluster;
 import javax.annotation.PostConstruct;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,12 +65,12 @@ public class MosaServiceImpl implements MosaService {
     /**
      * 缓存key：房间玩家信息
      * hash
-     * field：玩家名称
-     * value：就绪状态（Y：已就绪，N：未就绪）
+     * field：玩家名称、玩家房间位置
+     * value：就绪状态（Y：已就绪，N：未就绪）、玩家名称
      *
      * @return java.lang.String
      */
-    private String redisKeyHashRoomPlayerInfo(String roomId) {
+    public static String redisKeyHashRoomPlayerInfo(String roomId) {
         return "{mosa}:r:k:hash:r:p:i:" + roomId;
     }
 
@@ -93,35 +95,80 @@ public class MosaServiceImpl implements MosaService {
     @Override
     public boolean createRoom(String userName) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         String roomId = newRoomId();
+        final String index = "0";
+        //玩家信息
         Map<String, String> playerMap = new HashMap<>(2);
         playerMap.put("roomId", roomId);
-        playerMap.put("index", "0");
-        //玩家信息
+        playerMap.put("index", index);
         jedisCluster.hmset(PlayerServiceImpl.redisKeyHashPlayerInfo(userName), playerMap);
         //房间信息
         jedisUtils.hmset(redisKeyHashRoomInfo(roomId), new RoomMosa(roomId, userName));
         //房间玩家信息
-        jedisCluster.hset(redisKeyHashRoomPlayerInfo(roomId), userName, Constants.N);
+        Map<String, String> roomPlayerMap = new HashMap<>(2);
+        roomPlayerMap.put(index, userName);
+        roomPlayerMap.put(userName, Constants.N);
+        jedisCluster.hmset(redisKeyHashRoomPlayerInfo(roomId), roomPlayerMap);
         //房间列表
         jedisCluster.zadd(redisKeyZsetRoomIdStatusWaiting(), System.currentTimeMillis(), roomId);
         return true;
     }
 
     private final static int ROOM_PLAYER_COUNT_MAX = 4;
+    private final static String[] ROOM_PLAYER_INDEX_ARRAY = {"0", "1", "2", "3"};
 
     @Override
     public boolean joinRoom(String roomId, String userName) {
-        int count = jedisCluster.hlen(redisKeyHashRoomPlayerInfo(roomId)).intValue();
-        if ((count + 1) > ROOM_PLAYER_COUNT_MAX) {
+        int index = -1;
+        List<String> list = jedisCluster.hmget(redisKeyHashRoomPlayerInfo(roomId), ROOM_PLAYER_INDEX_ARRAY);
+        for (int i = 0; i < ROOM_PLAYER_COUNT_MAX; i++) {
+            if (list.get(i) == null) {
+                index = i;
+            }
+        }
+        if (index < 0) {
             return false;
         }
+        //玩家信息
         Map<String, String> playerMap = new HashMap<>(2);
         playerMap.put("roomId", roomId);
-        playerMap.put("index", String.valueOf(count));
-        //玩家信息
+        playerMap.put("index", String.valueOf(index));
         jedisCluster.hmset(PlayerServiceImpl.redisKeyHashPlayerInfo(userName), playerMap);
         //房间玩家信息
-        jedisCluster.hset(redisKeyHashRoomPlayerInfo(roomId), userName, Constants.N);
+        Map<String, String> roomPlayerMap = new HashMap<>(2);
+        roomPlayerMap.put(String.valueOf(index), userName);
+        roomPlayerMap.put(userName, Constants.N);
+        jedisCluster.hmset(redisKeyHashRoomPlayerInfo(roomId), roomPlayerMap);
         return true;
+    }
+
+    @Override
+    public void leaveRoom(String roomId, String userName, String index) {
+        //移除房间内当前玩家信息
+        jedisCluster.hdel(redisKeyHashRoomPlayerInfo(roomId), userName, index);
+        //移除缓存玩家信息
+        jedisCluster.del(PlayerServiceImpl.redisKeyHashPlayerInfo(userName));
+        //房主变更
+        String master = jedisCluster.hget(redisKeyHashRoomInfo(roomId), "master");
+        if (StringUtils.equals(master, userName)) {
+            List<String> list = jedisCluster.hmget(redisKeyHashRoomPlayerInfo(roomId), ROOM_PLAYER_INDEX_ARRAY);
+            for (int i = 0; i < ROOM_PLAYER_COUNT_MAX; i++) {
+                if (list.get(i) != null) {
+                    jedisCluster.hset(redisKeyHashRoomInfo(roomId), "master", list.get(i));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void closeRoom(String roomId) {
+        //房间信息
+        jedisCluster.del(redisKeyHashRoomInfo(roomId));
+        //房间列表
+        jedisCluster.zrem(redisKeyZsetRoomIdStatusWaiting(), roomId);
+    }
+
+    @Override
+    public List<String> listUserNameInRoom(String roomId) {
+        return jedisCluster.hmget(redisKeyHashRoomPlayerInfo(roomId), ROOM_PLAYER_INDEX_ARRAY);
     }
 }

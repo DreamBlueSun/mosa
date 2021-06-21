@@ -1,15 +1,9 @@
 package com.mhb.mosa.entity;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.mhb.mosa.memory.PlayerHome;
 import com.mhb.mosa.scoket.Handle;
-import com.mhb.mosa.util.ChatFunctionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-
-import java.io.IOException;
 
 /**
  * @date: 2021/5/21 18:05
@@ -22,14 +16,6 @@ public enum TextMsgEnumMosa implements Handle {
     CREATE_ROOM(0) {
         @Override
         public void execute(WebSocketSession session, TextMessage message) {
-            String json = new String(message.asBytes());
-            try {
-                TextMsg msg = JSONObject.parseObject(json, TextMsg.class);
-                Player player = PlayerHome.get(session.getId());
-                ChatFunctionUtils.send(player, JSON.toJSONString(msg));
-            } catch (IOException e) {
-                log.error("创建房间-" + json + "-异常：", e);
-            }
         }
     },
     /**
@@ -38,7 +24,6 @@ public enum TextMsgEnumMosa implements Handle {
     JOIN_ROOM(1) {
         @Override
         public void execute(WebSocketSession session, TextMessage message) {
-
         }
     },
     /**
@@ -47,7 +32,6 @@ public enum TextMsgEnumMosa implements Handle {
     LEAVE_ROOM(2) {
         @Override
         public void execute(WebSocketSession session, TextMessage message) {
-
         }
     },
     /**
@@ -85,6 +69,10 @@ public enum TextMsgEnumMosa implements Handle {
 
     TextMsgEnumMosa(int type) {
         this.type = type;
+    }
+
+    public int getType() {
+        return type;
     }
 
     public static TextMsgEnumMosa getInstance(int type) {

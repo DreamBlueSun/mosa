@@ -21,4 +21,13 @@ public class TextMsg<T> {
      * 数据
      */
     private T data;
+
+    public TextMsg() {
+    }
+
+    public TextMsg(int module, int type, T data) {
+        this.module = module;
+        this.type = type;
+        this.data = data;
+    }
 }

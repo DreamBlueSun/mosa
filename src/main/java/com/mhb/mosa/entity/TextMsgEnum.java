@@ -36,6 +36,10 @@ public enum TextMsgEnum {
         this.module = module;
     }
 
+    public int getModule() {
+        return module;
+    }
+
     abstract Handle next(int type);
 
     public static Handle getHandle(int module, int type) {
