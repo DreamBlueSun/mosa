@@ -45,6 +45,9 @@ $(function () {
     });
 });
 
+//socket关闭之前执行
+function beforeCloseWebSocket() {}
+
 //处理消息
 function onMessage(message) {
     var vo = JSON.parse(message);

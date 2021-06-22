@@ -35,5 +35,6 @@ function close() {
 
 //页面关闭之前
 window.onbeforeunload = function () {
+    beforeCloseWebSocket();
     close();
 };

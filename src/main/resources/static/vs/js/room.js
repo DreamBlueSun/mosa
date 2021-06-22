@@ -1,29 +1,4 @@
-$(function() {
-
-	//加入房间
-	$("#join_room").click(function() {
-		var roomName = $("#room_name").val();
-		var userName = $("#user_name").val();
-		if (roomName.length = 0 || roomName.length > 3) {
-			alert("房间号输入有误");
-			return;
-		}
-		if (userName.length = 0 || userName.length > 8) {
-			alert("用户名输入有误");
-			return;
-		}
-		$("#div_vs_joining").hide();
-		$("#div_vs_playing").show();
-		initWebSocket(roomName, userName);
-	});
-
-	//离开房间
-	$("#leave_room").click(function() {
-		close();
-		window.location.reload();
-	});
-
-});
+//TODO 所有方法
 
 function joinRoom(action) {
 	var isJoined = action.isJoined;

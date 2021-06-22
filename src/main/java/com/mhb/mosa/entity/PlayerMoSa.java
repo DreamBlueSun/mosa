@@ -1,6 +1,5 @@
 package com.mhb.mosa.entity;
 
-import com.alibaba.fastjson.JSON;
 import com.mhb.mosa.memory.RoleHomeEnum;
 import com.mhb.mosa.memory.SessionHome;
 import com.mhb.mosa.service.impl.PlayerServiceImpl;
@@ -48,23 +47,12 @@ public class PlayerMosa extends Player implements Comparable {
         playerMap.put("sessionId", getSessionId());
         playerMap.put("userName", getUserName());
         StaticUtils.jedisCluster.hmset(PlayerServiceImpl.redisKeyHashPlayerInfo(getUserName()), playerMap);
-        //发送信息
-        try {
-            sendAll(JSON.toJSONString(new TextMsg<>(TextMsgEnum.MOSA.getModule(), TextMsgEnumMosa.JOIN_ROOM.getType(), getUserName() + "加入房间")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         super.afterConnectionEstablished();
     }
 
     @Override
     public void afterConnectionClosed() {
         StaticUtils.mosaService.leaveRoom(this.roomId, getUserName(), String.valueOf(this.index));
-        try {
-            sendOther(JSON.toJSONString(new TextMsg<>(TextMsgEnum.MOSA.getModule(), TextMsgEnumMosa.LEAVE_ROOM.getType(), getUserName() + "离开房间")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         super.afterConnectionClosed();
     }
 
