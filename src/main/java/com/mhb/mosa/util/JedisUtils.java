@@ -1,10 +1,14 @@
 package com.mhb.mosa.util;
 
+import com.mhb.mosa.service.impl.LinkServiceImpl;
+import com.mhb.mosa.service.impl.MosaServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisCluster;
 
+import javax.annotation.PostConstruct;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -16,11 +20,30 @@ import java.util.stream.Collectors;
 /**
  * @date: 2021/6/18 17:37
  */
+@Slf4j
 @Component
 public class JedisUtils {
 
     @Autowired
     private JedisCluster jedisCluster;
+
+    @PostConstruct
+    private void initRedisData() {
+        try {
+            jedisCluster.del("initKey");
+        } catch (Exception e) {
+            log.error("初始化redis缓存数据-initKey-异常：", e);
+        }
+        String[] keys = new String[3];
+        keys[0] = LinkServiceImpl.redisKeyZsetPlayerOnLine();
+        keys[1] = MosaServiceImpl.redisKeyStringRoomIdMax();
+        keys[2] = MosaServiceImpl.redisKeyZsetRoomIdStatusWaiting();
+        try {
+            jedisCluster.del(keys);
+        } catch (Exception e) {
+            log.error("初始化redis缓存数据-keys-异常：", e);
+        }
+    }
 
     /**
      * hmset

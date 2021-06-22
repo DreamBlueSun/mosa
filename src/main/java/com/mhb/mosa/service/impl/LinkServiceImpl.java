@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 import redis.clients.jedis.JedisCluster;
 
-import javax.annotation.PostConstruct;
-
 /**
  * @date: 2021/5/21 15:32
  */
@@ -28,17 +26,8 @@ public class LinkServiceImpl implements LinkService {
      *
      * @return java.lang.String
      */
-    private String redisKeyZsetPlayerOnLine() {
+    public static String redisKeyZsetPlayerOnLine() {
         return "r:k:zset:p:o:l";
-    }
-
-    @PostConstruct
-    private void initZsetPlayerOnLine() {
-        try {
-            jedisCluster.del(redisKeyZsetPlayerOnLine());
-        } catch (Exception e) {
-            log.error("初始化在线玩家集合-异常：", e);
-        }
     }
 
     @Override

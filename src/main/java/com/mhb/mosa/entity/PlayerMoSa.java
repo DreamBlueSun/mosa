@@ -3,7 +3,6 @@ package com.mhb.mosa.entity;
 import com.alibaba.fastjson.JSON;
 import com.mhb.mosa.memory.RoleHomeEnum;
 import com.mhb.mosa.memory.SessionHome;
-import com.mhb.mosa.service.impl.MosaServiceImpl;
 import com.mhb.mosa.service.impl.PlayerServiceImpl;
 import com.mhb.mosa.util.StaticUtils;
 import lombok.Data;
@@ -11,7 +10,10 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @date: 2021/6/2 17:44
@@ -58,9 +60,6 @@ public class PlayerMosa extends Player implements Comparable {
     @Override
     public void afterConnectionClosed() {
         StaticUtils.mosaService.leaveRoom(this.roomId, getUserName(), String.valueOf(this.index));
-        if (StaticUtils.jedisCluster.hlen(MosaServiceImpl.redisKeyHashRoomPlayerInfo(this.roomId)) == 0) {
-            StaticUtils.mosaService.closeRoom(this.roomId);
-        }
         try {
             sendOther(JSON.toJSONString(new TextMsg<>(TextMsgEnum.MOSA.getModule(), TextMsgEnumMosa.LEAVE_ROOM.getType(), getUserName() + "离开房间")));
         } catch (IOException e) {
@@ -83,11 +82,13 @@ public class PlayerMosa extends Player implements Comparable {
     public void sendOther(String msg) throws IOException {
         List<String> listUserName = StaticUtils.mosaService.listUserNameInRoom(this.roomId);
         listUserName.remove(getUserName());
-        List<String> listSessionId = new ArrayList<>();
-        for (String username : listUserName) {
-            listSessionId.add(StaticUtils.playerService.getProperties(username, "sessionId").get(0));
+        if (CollectionUtils.isNotEmpty(listUserName)) {
+            List<String> listSessionId = new ArrayList<>();
+            for (String username : listUserName) {
+                listSessionId.add(StaticUtils.playerService.getProperties(username, "sessionId").get(0));
+            }
+            SessionHome.sendMsg(listSessionId, msg);
         }
-        SessionHome.sendMsg(listSessionId, msg);
     }
 
     @Override

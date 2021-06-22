@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.JedisCluster;
 
-import javax.annotation.PostConstruct;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +35,7 @@ public class MosaServiceImpl implements MosaService {
      *
      * @return java.lang.String
      */
-    private String redisKeyStringRoomIdMax() {
+    public static String redisKeyStringRoomIdMax() {
         return "{mosa}:r:k:string:r:i:m";
     }
 
@@ -59,7 +58,7 @@ public class MosaServiceImpl implements MosaService {
      *
      * @return java.lang.String
      */
-    private String redisKeyZsetRoomIdStatusWaiting() {
+    public static String redisKeyZsetRoomIdStatusWaiting() {
         return "{mosa}:r:k:zset:r:i:s:w";
     }
 
@@ -73,15 +72,6 @@ public class MosaServiceImpl implements MosaService {
      */
     public static String redisKeyHashRoomPlayerInfo(String roomId) {
         return "{mosa}:r:k:hash:r:p:i:" + roomId;
-    }
-
-    @PostConstruct
-    private void initMosa() {
-        try {
-            jedisCluster.del(redisKeyStringRoomIdMax(), redisKeyZsetRoomIdStatusWaiting());
-        } catch (Exception e) {
-            log.error("初始化Mosa-异常：", e);
-        }
     }
 
     /**
