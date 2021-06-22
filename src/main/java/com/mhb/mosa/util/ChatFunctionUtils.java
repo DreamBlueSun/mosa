@@ -16,4 +16,8 @@ public class ChatFunctionUtils {
     public static void sendAll(ChatFunction function, String msg) throws IOException {
         function.sendAll(msg);
     }
+
+    public static void sendOther(ChatFunction function, String msg) throws IOException {
+        function.sendOther(msg);
+    }
 }

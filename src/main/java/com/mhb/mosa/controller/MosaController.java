@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * @date: 2021/6/10 9:32
  */
@@ -23,7 +21,7 @@ public class MosaController {
     private MosaService mosaService;
 
     @RequestMapping("/room/create/{userName}")
-    public ResultBean createRoom(HttpServletRequest request, @PathVariable String userName) {
+    public ResultBean createRoom(@PathVariable String userName) {
         ResultBean result;
         try {
             boolean create = mosaService.createRoom(userName);
@@ -40,7 +38,7 @@ public class MosaController {
     }
 
     @RequestMapping("/room/join/{roomId}/{userName}")
-    public ResultBean joinRoom(HttpServletRequest request, @PathVariable String roomId, @PathVariable String userName) {
+    public ResultBean joinRoom(@PathVariable String roomId, @PathVariable String userName) {
         ResultBean result;
         try {
             boolean join = mosaService.joinRoom(roomId, userName);

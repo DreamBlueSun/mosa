@@ -5,6 +5,7 @@ import com.mhb.mosa.entity.RoomMosa;
 import com.mhb.mosa.service.MosaService;
 import com.mhb.mosa.util.JedisUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -147,24 +148,26 @@ public class MosaServiceImpl implements MosaService {
         jedisCluster.hdel(redisKeyHashRoomPlayerInfo(roomId), userName, index);
         //移除缓存玩家信息
         jedisCluster.del(PlayerServiceImpl.redisKeyHashPlayerInfo(userName));
-        //房主变更
-        String master = jedisCluster.hget(redisKeyHashRoomInfo(roomId), "master");
-        if (StringUtils.equals(master, userName)) {
-            List<String> list = jedisCluster.hmget(redisKeyHashRoomPlayerInfo(roomId), ROOM_PLAYER_INDEX_ARRAY);
-            for (int i = 0; i < ROOM_PLAYER_COUNT_MAX; i++) {
-                if (list.get(i) != null) {
-                    jedisCluster.hset(redisKeyHashRoomInfo(roomId), "master", list.get(i));
+        //关闭房间
+        if (jedisCluster.hlen(redisKeyHashRoomPlayerInfo(roomId)) == 0) {
+            //房间信息
+            jedisCluster.del(redisKeyHashRoomInfo(roomId));
+            //房间列表
+            jedisCluster.zrem(redisKeyZsetRoomIdStatusWaiting(), roomId);
+        } else {
+            String master = jedisCluster.hget(redisKeyHashRoomInfo(roomId), "master");
+            if (StringUtils.equals(master, userName)) {
+                //房主变更
+                List<String> list = jedisCluster.hmget(redisKeyHashRoomPlayerInfo(roomId), ROOM_PLAYER_INDEX_ARRAY);
+                if (CollectionUtils.isNotEmpty(list)) {
+                    for (int i = 0; i < ROOM_PLAYER_COUNT_MAX; i++) {
+                        if (list.get(i) != null) {
+                            jedisCluster.hset(redisKeyHashRoomInfo(roomId), "master", list.get(i));
+                        }
+                    }
                 }
             }
         }
-    }
-
-    @Override
-    public void closeRoom(String roomId) {
-        //房间信息
-        jedisCluster.del(redisKeyHashRoomInfo(roomId));
-        //房间列表
-        jedisCluster.zrem(redisKeyZsetRoomIdStatusWaiting(), roomId);
     }
 
     @Override

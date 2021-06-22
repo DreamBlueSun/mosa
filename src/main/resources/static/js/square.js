@@ -20,7 +20,7 @@ $(function () {
             success: function (data) {
                 alert(data.msg);
                 if (data.code === "0000") {
-                    window.location.href = "vs/html/mosa.html";
+                    window.location.href = "vs/html/mosa.html?0";
                 }
             }, error: function () {
                 alert("发生错误");
@@ -36,7 +36,7 @@ $(function () {
             success: function (data) {
                 alert(data.msg);
                 if (data.code === "0000") {
-                    window.location.href = "vs/html/mosa.html";
+                    window.location.href = "vs/html/mosa.html?1";
                 }
             }, error: function () {
                 alert("发生错误");

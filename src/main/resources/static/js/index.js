@@ -1,7 +1,7 @@
 $(function () {
 
-    //加入房间
-    $("#join").click(function () {
+    //登入
+    $("#login").click(function () {
         var userName = $("#user_name").val();
         if (userName.length = 0 || userName.length > 8) {
             alert("昵称输入有误");

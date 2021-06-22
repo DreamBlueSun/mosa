@@ -37,14 +37,6 @@ public interface MosaService {
     void leaveRoom(String roomId, String userName, String index);
 
     /**
-     * 关闭房间
-     *
-     * @param roomId 房间号
-     * @return boolean
-     */
-    void closeRoom(String roomId);
-
-    /**
      * 获取房间内玩家名称列表
      *
      * @param roomId 房间号
