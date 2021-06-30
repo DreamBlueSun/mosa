@@ -9,9 +9,13 @@ function joinRoom(data) {
     if (data.type === 0) {
         selfIndex = data.index;
         $("#td_name_0").text(data.userName);
+        //填充已占有位置信息
+        var players = data.players;
+        for (var i = 0; i < players.length; i++) {
+            $("#td_name_" + countOffset(selfIndex, players[i].index)).text(players[i].userName);
+        }
     } else {
-        var index = countOffset(selfIndex, data.index);
-        $("#td_name_" + index).text(data.userName);
+        $("#td_name_" + countOffset(selfIndex, data.index)).text(data.userName);
     }
 }
 

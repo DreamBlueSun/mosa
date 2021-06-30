@@ -13,11 +13,11 @@ function initWebSocket(role, userName) {
         };
         web_socket.onclose = function () {
             console.log("close");
-            window.location.href = document.location.host + pathHead;
+            window.location.href = "/mosa";
         };
         web_socket.onerro = function () {
             console.log("erro");
-            window.location.href = document.location.host + pathHead;
+            window.location.href = "/mosa";
         };
         web_socket.onmessage = function (message) {
             onMessage(message.data);

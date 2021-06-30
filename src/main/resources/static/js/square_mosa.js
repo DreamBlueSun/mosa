@@ -21,7 +21,7 @@ $(function () {
     //加入MoSa房间
     $("[name='joinMosaRoom']").click(function () {
         var mosa = $(this).attr("mosa");
-        var roomId = $("#td-mosa-room-id-" + mosa).val();
+        var roomId = $("#td-mosa-room-id-" + mosa).html();
         $.ajax({
             url: pathHead + "mosa/room/join/" + roomId + "/" + userName,
             type: "get",
@@ -37,7 +37,7 @@ $(function () {
     });
 
     //刷新MoSa房间列表
-    $("#query_mosa_room").click(function () {
+    $("#refresh_mosa_room").click(function () {
         listRoom();
     });
 });

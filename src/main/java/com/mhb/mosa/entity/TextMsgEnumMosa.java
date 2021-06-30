@@ -6,7 +6,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.mhb.mosa.memory.PlayerHome;
 import com.mhb.mosa.scoket.Handle;
 import com.mhb.mosa.util.ChatFunctionUtils;
-import com.mhb.mosa.vo.PlayerMosaVO;
+import com.mhb.mosa.vo.MosaVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -26,10 +26,10 @@ public enum TextMsgEnumMosa implements Handle {
         public void execute(WebSocketSession session, TextMessage message) {
             String json = new String(message.asBytes());
             try {
-                TextMsg<PlayerMosaVO> msg = JSONObject.parseObject(json, new TypeReference<TextMsg<PlayerMosaVO>>() {
+                TextMsg<MosaVO> msg = JSONObject.parseObject(json, new TypeReference<TextMsg<MosaVO>>() {
                 });
                 PlayerMosa player = (PlayerMosa) PlayerHome.get(session.getId());
-                msg.setData(new PlayerMosaVO(player, player.getUserName() + "创建房间"));
+                msg.setData(new MosaVO(player, player.getUserName() + "创建房间"));
                 ChatFunctionUtils.send(player, JSON.toJSONString(msg));
             } catch (IOException e) {
                 log.error("创建房间-" + json + "-异常：", e);
@@ -44,13 +44,14 @@ public enum TextMsgEnumMosa implements Handle {
         public void execute(WebSocketSession session, TextMessage message) {
             String json = new String(message.asBytes());
             try {
-                TextMsg<PlayerMosaVO> msg = JSONObject.parseObject(json, new TypeReference<TextMsg<PlayerMosaVO>>() {
+                TextMsg<MosaVO> msg = JSONObject.parseObject(json, new TypeReference<TextMsg<MosaVO>>() {
                 });
                 PlayerMosa player = (PlayerMosa) PlayerHome.get(session.getId());
-                msg.setData(new PlayerMosaVO(player, player.getUserName() + "加入房间", 0));
-                ChatFunctionUtils.send(player, JSON.toJSONString(msg));
-                msg.getData().setType(1);
+                msg.setData(new MosaVO(player, player.getUserName() + "加入房间", 1));
                 ChatFunctionUtils.sendOther(player, JSON.toJSONString(msg));
+                msg.getData().setType(0);
+                msg.getData().fillPlayers();
+                ChatFunctionUtils.send(player, JSON.toJSONString(msg));
             } catch (IOException e) {
                 log.error("加入房间-" + json + "-异常：", e);
             }
@@ -64,10 +65,10 @@ public enum TextMsgEnumMosa implements Handle {
         public void execute(WebSocketSession session, TextMessage message) {
             String json = new String(message.asBytes());
             try {
-                TextMsg<PlayerMosaVO> msg = JSONObject.parseObject(json, new TypeReference<TextMsg<PlayerMosaVO>>() {
+                TextMsg<MosaVO> msg = JSONObject.parseObject(json, new TypeReference<TextMsg<MosaVO>>() {
                 });
                 PlayerMosa player = (PlayerMosa) PlayerHome.get(session.getId());
-                msg.setData(new PlayerMosaVO(player, player.getUserName() + "离开房间"));
+                msg.setData(new MosaVO(player, player.getUserName() + "离开房间"));
                 ChatFunctionUtils.sendOther(player, JSON.toJSONString(msg));
             } catch (IOException e) {
                 log.error("离开房间-" + json + "-异常：", e);
