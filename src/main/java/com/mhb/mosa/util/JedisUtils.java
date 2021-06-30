@@ -29,17 +29,12 @@ public class JedisUtils {
 
     @PostConstruct
     private void initRedisData() {
-        try {
-            jedisCluster.del("initKey");
-        } catch (Exception e) {
-            log.error("初始化redis缓存数据-initKey-异常：", e);
-        }
-        String[] keys = new String[3];
-        keys[0] = LinkServiceImpl.redisKeyZsetPlayerOnLine();
-        keys[1] = MosaServiceImpl.redisKeyStringRoomIdMax();
-        keys[2] = MosaServiceImpl.redisKeyZsetRoomIdStatusWaiting();
+        String[] keys = new String[2];
+        keys[0] = MosaServiceImpl.redisKeyStringRoomIdMax();
+        keys[1] = MosaServiceImpl.redisKeyZsetRoomIdStatusWaiting();
         try {
             jedisCluster.del(keys);
+            jedisCluster.del(LinkServiceImpl.redisKeyZsetPlayerOnLine());
         } catch (Exception e) {
             log.error("初始化redis缓存数据-keys-异常：", e);
         }

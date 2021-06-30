@@ -13,7 +13,7 @@ $(function () {
             success: function (data) {
                 alert(data.msg);
                 if (data.code === "0000") {
-                    setCookie("userName", userName, 1);
+                    sessionStorage.setItem("userName", userName);
                     window.location.href = "square.html";
                 }
             }, error: function () {

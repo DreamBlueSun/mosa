@@ -47,8 +47,10 @@ public enum TextMsgEnumMosa implements Handle {
                 TextMsg<PlayerMosaVO> msg = JSONObject.parseObject(json, new TypeReference<TextMsg<PlayerMosaVO>>() {
                 });
                 PlayerMosa player = (PlayerMosa) PlayerHome.get(session.getId());
-                msg.setData(new PlayerMosaVO(player, player.getUserName() + "加入房间"));
-                ChatFunctionUtils.sendAll(player, JSON.toJSONString(msg));
+                msg.setData(new PlayerMosaVO(player, player.getUserName() + "加入房间", 0));
+                ChatFunctionUtils.send(player, JSON.toJSONString(msg));
+                msg.getData().setType(1);
+                ChatFunctionUtils.sendOther(player, JSON.toJSONString(msg));
             } catch (IOException e) {
                 log.error("加入房间-" + json + "-异常：", e);
             }

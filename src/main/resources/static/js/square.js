@@ -1,6 +1,6 @@
-$(function () {
+var userName = sessionStorage.getItem("userName");
 
-    var userName = getCookie("userName");
+$(function () {
 
     initWebSocket("2", userName);
 
@@ -11,42 +11,15 @@ $(function () {
             web_socket.send(JSON.stringify(to));
         }
     });
-
-    //创建MoSa房间
-    $("#create_mosa").click(function () {
-        $.ajax({
-            url: pathHead + "mosa/room/create/" + userName,
-            type: "get",
-            success: function (data) {
-                alert(data.msg);
-                if (data.code === "0000") {
-                    window.location.href = "vs/html/mosa.html?0";
-                }
-            }, error: function () {
-                alert("发生错误");
-            }
-        });
-    });
-
-    //加入MoSa房间
-    $("#join_mosa").click(function () {
-        $.ajax({
-            url: pathHead + "mosa/room/join/" + $("#room_id").val() + "/" + userName,
-            type: "get",
-            success: function (data) {
-                alert(data.msg);
-                if (data.code === "0000") {
-                    window.location.href = "vs/html/mosa.html?1";
-                }
-            }, error: function () {
-                alert("发生错误");
-            }
-        });
-    });
 });
 
+//socket开启之后执行
+function afterOpenWebSocket() {
+}
+
 //socket关闭之前执行
-function beforeCloseWebSocket() {}
+function beforeCloseWebSocket() {
+}
 
 //处理消息
 function onMessage(message) {

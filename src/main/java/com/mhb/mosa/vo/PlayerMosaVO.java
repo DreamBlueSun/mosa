@@ -10,11 +10,6 @@ import lombok.Data;
 public class PlayerMosaVO {
 
     /**
-     * 消息
-     */
-    private String msg;
-
-    /**
      * 名称
      */
     private String userName;
@@ -24,9 +19,26 @@ public class PlayerMosaVO {
      */
     private Integer index;
 
+    /**
+     * 消息
+     */
+    private String msg;
+
+    /**
+     * 类型（0：目标是自己，1：目标是其他玩家）
+     */
+    private Integer type;
+
     public PlayerMosaVO(PlayerMosa player, String msg) {
         this.msg = msg;
         this.userName = player.getUserName();
         this.index = player.getIndex();
+    }
+
+    public PlayerMosaVO(PlayerMosa player, String msg, int type) {
+        this.msg = msg;
+        this.userName = player.getUserName();
+        this.index = player.getIndex();
+        this.type = type;
     }
 }

@@ -11,6 +11,7 @@
     <script src="js/cookie.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/web_socket.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/square.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/square_mosa.js" type="text/javascript" charset="utf-8"></script>
     <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css"/>
 </head>
 <body>
@@ -18,17 +19,64 @@
 <div id="div_index" class="container">
     <div class="row clearfix">
         <div class="col-md-8 column">
-            <div class="form-group col-md-10">
+            <div class="col-md-10">
                 <input type="text" class="form-control" id="msg"/>
             </div>
-            <div class="form-group col-md-2">
+            <div class="col-md-2">
                 <button type="button" class="btn btn-block btn-default btn-info" id="send">发送</button>
             </div>
-            <div class="col-md-4 col-md-offset-4" align="center">
-                <h1>MoSa</h1>
-            </div>
-            <div class="col-md-4 column">
-                <button type="button" class="btn btn-primary btn-default btn-block" id="create_mosa">创建房间</button>
+            <div id="div_mosa">
+                <div>
+                    <table class="table">
+                        <caption><h1>MoSa</h1></caption>
+                        <thead>
+                        <tr>
+                            <th>房间号</th>
+                            <th style="text-align: center">人数</th>
+                            <th style="text-align: right">
+                                <button type="button" class="btn btn-default" id="create_mosa_room">创建房间</button>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr id="tr-mosa-list-0" style="display: none">
+                            <td id="td-mosa-room-id-0"></td>
+                            <td id="td-mosa-players-num-0" style="text-align: center"></td>
+                            <td style="text-align: right">
+                                <button type="button" class="btn btn-default" mosa="0" name="joinMosaRoom">加入房间</button>
+                            </td>
+                        </tr>
+                        <tr id="tr-mosa-list-1" style="display: none">
+                            <td id="td-mosa-room-id-1"></td>
+                            <td id="td-mosa-players-num-1" style="text-align: center"></td>
+                            <td style="text-align: right">
+                                <button type="button" class="btn btn-default" mosa="1" name="joinMosaRoom">加入房间</button>
+                            </td>
+                        </tr>
+                        <tr id="tr-mosa-list-2" style="display: none">
+                            <td id="td-mosa-room-id-2"></td>
+                            <td id="td-mosa-players-num-2" style="text-align: center"></td>
+                            <td style="text-align: right">
+                                <button type="button" class="btn btn-default" mosa="2" name="joinMosaRoom">加入房间</button>
+                            </td>
+                        </tr>
+                        <tr id="tr-mosa-list-3" style="display: none">
+                            <td id="td-mosa-room-id-3"></td>
+                            <td id="td-mosa-players-num-3" style="text-align: center"></td>
+                            <td style="text-align: right">
+                                <button type="button" class="btn btn-default" mosa="3" name="joinMosaRoom">加入房间</button>
+                            </td>
+                        </tr>
+                        <tr id="tr-mosa-list-4" style="display: none">
+                            <td id="td-mosa-room-id-4"></td>
+                            <td id="td-mosa-players-num-4" style="text-align: center"></td>
+                            <td style="text-align: right">
+                                <button type="button" class="btn btn-default" mosa="4" name="joinMosaRoom">加入房间</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="col-md-4 column" id="div_msg_list">

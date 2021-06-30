@@ -1,5 +1,7 @@
 package com.mhb.mosa.service;
 
+import com.mhb.mosa.vo.ListMosaRoomVO;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -8,6 +10,22 @@ import java.util.List;
  */
 
 public interface MosaService {
+
+    /**
+     * 获取房间列表
+     *
+     * @param pageSize 分页大小
+     * @param pageNum  页码
+     * @return java.util.List<com.sinovatech.release.entity.option.OptionClientVersion>
+     */
+    List<ListMosaRoomVO> listRoomLimit(String pageSize, String pageNum);
+
+    /**
+     * 获取房间数量
+     *
+     * @return long
+     */
+    long countRoom();
 
     /**
      * 创建房间

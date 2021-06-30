@@ -1,19 +1,30 @@
-$(function () {
-    initWebSocket("3", getCookie("userName"));
-
-    //初始化信息
-    if (web_socket != null) {
-        var type = location.search.substr(1);
-        var to = {module: "3", type: type};
-        web_socket.send(JSON.stringify(to));
-    }
-});
+var selfName;
 
 var alive = true;
+
+$(function () {
+    selfName = sessionStorage.getItem("userName");
+    initWebSocket("3", selfName);
+
+    //离开房间
+    $("#leave_room").click(function () {
+        window.location.href = "../square.html";
+    });
+
+});
+
+//socket开启之后执行
+function afterOpenWebSocket() {
+    //初始化信息（create、join）
+    var type = location.search.substr(1);
+    var to = {module: "3", type: type};
+    web_socket.send(JSON.stringify(to));
+}
 
 //socket关闭之前执行
 function beforeCloseWebSocket() {
     if (alive && web_socket != null) {
+        //初始化信息（leave）
         var to = {module: "3", type: "2"};
         web_socket.send(JSON.stringify(to));
         alive = false;
@@ -28,15 +39,13 @@ function onMessage(message) {
     var data = vo.data;
     if (module === 3) {
         if (type === 0) {
-            //创建房间
-            joinRoom(data);
+            createRoom(data);
         } else if (type === 1) {
             //加入房间
             joinRoom(data);
         } else if (type === 2) {
             //离开房间
             leaveRoom(data);
-            window.location.href = "../square.html";
         } else if (type === 3) {
             //准备就绪
         } else if (type === 4) {

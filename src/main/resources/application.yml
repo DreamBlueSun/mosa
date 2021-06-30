@@ -13,15 +13,15 @@ redis:
   soTimeout: 3000
   maxAttempts: 5
   jedisClusterNodes:
-  - ip: 152.136.225.204
+  - ip: redis.maohangbin.com
     port: 6380
-  - ip: 152.136.225.204
+  - ip: redis.maohangbin.com
     port: 6381
-  - ip: 152.136.225.204
+  - ip: redis.maohangbin.com
     port: 6382
-  - ip: 152.136.225.204
+  - ip: redis.maohangbin.com
     port: 6383
-  - ip: 152.136.225.204
+  - ip: redis.maohangbin.com
     port: 6384
-  - ip: 152.136.225.204
+  - ip: redis.maohangbin.com
     port: 6385

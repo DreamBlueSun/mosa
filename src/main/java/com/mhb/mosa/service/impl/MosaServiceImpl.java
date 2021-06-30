@@ -4,6 +4,7 @@ import com.mhb.mosa.constant.Constants;
 import com.mhb.mosa.entity.RoomMosa;
 import com.mhb.mosa.service.MosaService;
 import com.mhb.mosa.util.JedisUtils;
+import com.mhb.mosa.vo.ListMosaRoomVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -15,6 +16,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @date: 2021/6/15 17:30
@@ -63,10 +66,22 @@ public class MosaServiceImpl implements MosaService {
     }
 
     /**
-     * 缓存key：房间玩家信息
+     * 缓存key：房间位置对应信息
      * hash
-     * field：玩家名称、玩家房间位置
-     * value：就绪状态（Y：已就绪，N：未就绪）、玩家名称
+     * field：玩家房间位置
+     * value：玩家名称
+     *
+     * @return java.lang.String
+     */
+    public static String redisKeyHashRoomIndexInfo(String roomId) {
+        return "{mosa}:r:k:hash:r:i:i:" + roomId;
+    }
+
+    /**
+     * 缓存key：房间玩家对应信息
+     * hash
+     * field：玩家名称
+     * value：就绪状态（Y：已就绪，N：未就绪）
      *
      * @return java.lang.String
      */
@@ -84,6 +99,23 @@ public class MosaServiceImpl implements MosaService {
     }
 
     @Override
+    public List<ListMosaRoomVO> listRoomLimit(String pageSize, String pageNum) {
+        long l = Long.parseLong(pageSize);
+        long start = (Long.parseLong(pageNum) - 1) * l;
+        long stop = start + l - 1;
+
+        Set<String> set = jedisCluster.zrevrange(redisKeyZsetRoomIdStatusWaiting(), start, stop);
+        return set.stream().map(ListMosaRoomVO::new).peek(i ->
+                i.setPlayersNum(String.valueOf(jedisCluster.hlen(redisKeyHashRoomIndexInfo(i.getRoomId()))))
+        ).collect(Collectors.toList());
+    }
+
+    @Override
+    public long countRoom() {
+        return jedisCluster.zcard(redisKeyZsetRoomIdStatusWaiting());
+    }
+
+    @Override
     public boolean createRoom(String userName) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         String roomId = newRoomId();
         final String index = "0";
@@ -94,11 +126,10 @@ public class MosaServiceImpl implements MosaService {
         jedisCluster.hmset(PlayerServiceImpl.redisKeyHashPlayerInfo(userName), playerMap);
         //房间信息
         jedisUtils.hmset(redisKeyHashRoomInfo(roomId), new RoomMosa(roomId, userName));
+        //房间位置信息
+        jedisCluster.hset(redisKeyHashRoomIndexInfo(roomId), index, userName);
         //房间玩家信息
-        Map<String, String> roomPlayerMap = new HashMap<>(2);
-        roomPlayerMap.put(index, userName);
-        roomPlayerMap.put(userName, Constants.N);
-        jedisCluster.hmset(redisKeyHashRoomPlayerInfo(roomId), roomPlayerMap);
+        jedisCluster.hset(redisKeyHashRoomPlayerInfo(roomId), userName, Constants.N);
         //房间列表
         jedisCluster.zadd(redisKeyZsetRoomIdStatusWaiting(), System.currentTimeMillis(), roomId);
         return true;
@@ -109,14 +140,8 @@ public class MosaServiceImpl implements MosaService {
 
     @Override
     public boolean joinRoom(String roomId, String userName) {
-        int index = -1;
-        List<String> list = jedisCluster.hmget(redisKeyHashRoomPlayerInfo(roomId), ROOM_PLAYER_INDEX_ARRAY);
-        for (int i = 0; i < ROOM_PLAYER_COUNT_MAX; i++) {
-            if (list.get(i) == null) {
-                index = i;
-            }
-        }
-        if (index < 0) {
+        int index = jedisCluster.hlen(redisKeyHashRoomIndexInfo(roomId)).intValue();
+        if (index >= ROOM_PLAYER_COUNT_MAX) {
             return false;
         }
         //玩家信息
@@ -124,22 +149,23 @@ public class MosaServiceImpl implements MosaService {
         playerMap.put("roomId", roomId);
         playerMap.put("index", String.valueOf(index));
         jedisCluster.hmset(PlayerServiceImpl.redisKeyHashPlayerInfo(userName), playerMap);
+        //房间位置信息
+        jedisCluster.hset(redisKeyHashRoomIndexInfo(roomId), String.valueOf(index), userName);
         //房间玩家信息
-        Map<String, String> roomPlayerMap = new HashMap<>(2);
-        roomPlayerMap.put(String.valueOf(index), userName);
-        roomPlayerMap.put(userName, Constants.N);
-        jedisCluster.hmset(redisKeyHashRoomPlayerInfo(roomId), roomPlayerMap);
+        jedisCluster.hset(redisKeyHashRoomPlayerInfo(roomId), userName, Constants.N);
         return true;
     }
 
     @Override
     public void leaveRoom(String roomId, String userName, String index) {
+        //移除房间内当前位置信息
+        jedisCluster.hdel(redisKeyHashRoomIndexInfo(roomId), index);
         //移除房间内当前玩家信息
-        jedisCluster.hdel(redisKeyHashRoomPlayerInfo(roomId), userName, index);
+        jedisCluster.hdel(redisKeyHashRoomPlayerInfo(roomId), userName);
         //移除缓存玩家信息
         jedisCluster.del(PlayerServiceImpl.redisKeyHashPlayerInfo(userName));
         //关闭房间
-        if (jedisCluster.hlen(redisKeyHashRoomPlayerInfo(roomId)) == 0) {
+        if (jedisCluster.hlen(redisKeyHashRoomIndexInfo(roomId)) == 0) {
             //房间信息
             jedisCluster.del(redisKeyHashRoomInfo(roomId));
             //房间列表
@@ -148,7 +174,7 @@ public class MosaServiceImpl implements MosaService {
             String master = jedisCluster.hget(redisKeyHashRoomInfo(roomId), "master");
             if (StringUtils.equals(master, userName)) {
                 //房主变更
-                List<String> list = jedisCluster.hmget(redisKeyHashRoomPlayerInfo(roomId), ROOM_PLAYER_INDEX_ARRAY);
+                List<String> list = jedisCluster.hmget(redisKeyHashRoomIndexInfo(roomId), ROOM_PLAYER_INDEX_ARRAY);
                 if (CollectionUtils.isNotEmpty(list)) {
                     for (int i = 0; i < ROOM_PLAYER_COUNT_MAX; i++) {
                         if (list.get(i) != null) {
@@ -162,6 +188,7 @@ public class MosaServiceImpl implements MosaService {
 
     @Override
     public List<String> listUserNameInRoom(String roomId) {
-        return jedisCluster.hmget(redisKeyHashRoomPlayerInfo(roomId), ROOM_PLAYER_INDEX_ARRAY);
+        Map<String, String> map = jedisCluster.hgetAll(redisKeyHashRoomIndexInfo(roomId));
+        return map.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
     }
 }

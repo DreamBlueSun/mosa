@@ -9,6 +9,7 @@ function initWebSocket(role, userName) {
         web_socket = new WebSocket(url);
         web_socket.onopen = function () {
             console.log("open")
+            afterOpenWebSocket();
         };
         web_socket.onclose = function () {
             console.log("close");
