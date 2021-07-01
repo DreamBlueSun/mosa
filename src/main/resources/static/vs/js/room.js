@@ -20,8 +20,7 @@ function joinRoom(data) {
 }
 
 function leaveRoom(data) {
-    var index = countOffset(selfIndex, data.index);
-    $("#td_name_" + index).text("离线");
+    $("#td_name_" + countOffset(selfIndex, data.index)).text("");
 }
 
 //计算位置显示偏移

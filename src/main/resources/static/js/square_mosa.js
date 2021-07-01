@@ -58,6 +58,7 @@ function listRoom() {
             }
             for (var i = 0; i < list.length; i++) {
                 $("#td-mosa-room-id-" + i).html(list[i].roomId);
+                $("#td-mosa-room-master-" + i).html(list[i].master);
                 $("#td-mosa-players-num-" + i).html(list[i].playersNum);
                 $("#tr-mosa-list-" + i).show();
             }

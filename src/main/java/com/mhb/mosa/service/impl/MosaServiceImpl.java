@@ -105,9 +105,10 @@ public class MosaServiceImpl implements MosaService {
         long stop = start + l - 1;
 
         Set<String> set = jedisCluster.zrevrange(redisKeyZsetRoomIdStatusWaiting(), start, stop);
-        return set.stream().map(ListMosaRoomVO::new).peek(i ->
-                i.setPlayersNum(String.valueOf(jedisCluster.hlen(redisKeyHashRoomIndexInfo(i.getRoomId()))))
-        ).collect(Collectors.toList());
+        return set.stream().map(ListMosaRoomVO::new).peek(i -> {
+            i.setMaster(jedisCluster.hget(redisKeyHashRoomInfo(i.getRoomId()), "master"));
+            i.setPlayersNum(String.valueOf(jedisCluster.hlen(redisKeyHashRoomIndexInfo(i.getRoomId()))));
+        }).collect(Collectors.toList());
     }
 
     @Override

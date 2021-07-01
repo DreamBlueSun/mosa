@@ -9,9 +9,14 @@ import lombok.Data;
 public class ListMosaRoomVO {
 
     /**
-     * 房间号
+     * 房间id
      */
     private String roomId;
+
+    /**
+     * 房主名称
+     */
+    private String master;
 
     /**
      * 人数
