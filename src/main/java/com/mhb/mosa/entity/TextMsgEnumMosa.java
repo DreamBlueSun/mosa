@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.mhb.mosa.memory.PlayerHome;
 import com.mhb.mosa.scoket.Handle;
+import com.mhb.mosa.service.impl.MosaServiceImpl;
 import com.mhb.mosa.util.ChatFunctionUtils;
+import com.mhb.mosa.util.StaticUtils;
 import com.mhb.mosa.vo.MosaVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
@@ -47,7 +49,7 @@ public enum TextMsgEnumMosa implements Handle {
                 TextMsg<MosaVO> msg = JSONObject.parseObject(json, new TypeReference<TextMsg<MosaVO>>() {
                 });
                 PlayerMosa player = (PlayerMosa) PlayerHome.get(session.getId());
-                msg.setData(new MosaVO(player, player.getUserName() + "加入房间", 1));
+                msg.setData(new MosaVO(player, player.getUserName() + "加入房间", -1));
                 ChatFunctionUtils.sendOther(player, JSON.toJSONString(msg));
                 msg.getData().setType(0);
                 msg.getData().fillPlayers();
@@ -78,7 +80,32 @@ public enum TextMsgEnumMosa implements Handle {
     /**
      * 准备就绪
      */
-    ROUND_READY(3) {
+    BE_READY(3) {
+        @Override
+        public void execute(WebSocketSession session, TextMessage message) {
+            String json = new String(message.asBytes());
+            try {
+                TextMsg<MosaVO> msg = JSONObject.parseObject(json, new TypeReference<TextMsg<MosaVO>>() {
+                });
+                PlayerMosa player = (PlayerMosa) PlayerHome.get(session.getId());
+                int ready = StaticUtils.mosaService.beReady(player.getRoomId(), player.getUserName());
+                if (ready < MosaServiceImpl.ROOM_PLAYER_COUNT_MAX) {
+                    msg.setData(new MosaVO(player, player.getUserName() + "准备就绪"));
+                } else {
+                    //TODO 牌局初始化
+
+                }
+                ChatFunctionUtils.sendAll(player, JSON.toJSONString(msg));
+            } catch (IOException e) {
+                log.error("准备就绪-" + json + "-异常：", e);
+            }
+
+        }
+    },
+    /**
+     * 取消就绪
+     */
+    CANCEL_READY(4) {
         @Override
         public void execute(WebSocketSession session, TextMessage message) {
 
@@ -87,7 +114,7 @@ public enum TextMsgEnumMosa implements Handle {
     /**
      * 打出卡牌
      */
-    PLAY_OUT(4) {
+    PLAY_OUT(5) {
         @Override
         public void execute(WebSocketSession session, TextMessage message) {
 
@@ -96,7 +123,7 @@ public enum TextMsgEnumMosa implements Handle {
     /**
      * 抽取卡牌
      */
-    DRAW_CARD(5) {
+    DRAW_CARD(6) {
         @Override
         public void execute(WebSocketSession session, TextMessage message) {
 

@@ -1,6 +1,5 @@
 package com.mhb.mosa.service.impl;
 
-import com.mhb.mosa.constant.Constants;
 import com.mhb.mosa.entity.RoomMosa;
 import com.mhb.mosa.service.MosaService;
 import com.mhb.mosa.util.JedisUtils;
@@ -78,15 +77,14 @@ public class MosaServiceImpl implements MosaService {
     }
 
     /**
-     * 缓存key：房间玩家对应信息
-     * hash
-     * field：玩家名称
-     * value：就绪状态（Y：已就绪，N：未就绪）
+     * 缓存key：房间内就绪的玩家
+     * set
+     * value：玩家名称
      *
      * @return java.lang.String
      */
-    public static String redisKeyHashRoomPlayerInfo(String roomId) {
-        return "{mosa}:r:k:hash:r:p:i:" + roomId;
+    public static String redisKeySetRoomReadyPlayers(String roomId) {
+        return "{mosa}:r:k:set:r:r:p:" + roomId;
     }
 
     /**
@@ -129,14 +127,12 @@ public class MosaServiceImpl implements MosaService {
         jedisUtils.hmset(redisKeyHashRoomInfo(roomId), new RoomMosa(roomId, userName));
         //房间位置信息
         jedisCluster.hset(redisKeyHashRoomIndexInfo(roomId), index, userName);
-        //房间玩家信息
-        jedisCluster.hset(redisKeyHashRoomPlayerInfo(roomId), userName, Constants.N);
         //房间列表
         jedisCluster.zadd(redisKeyZsetRoomIdStatusWaiting(), System.currentTimeMillis(), roomId);
         return true;
     }
 
-    private final static int ROOM_PLAYER_COUNT_MAX = 4;
+    public final static int ROOM_PLAYER_COUNT_MAX = 4;
     private final static String[] ROOM_PLAYER_INDEX_ARRAY = {"0", "1", "2", "3"};
 
     @Override
@@ -152,8 +148,6 @@ public class MosaServiceImpl implements MosaService {
         jedisCluster.hmset(PlayerServiceImpl.redisKeyHashPlayerInfo(userName), playerMap);
         //房间位置信息
         jedisCluster.hset(redisKeyHashRoomIndexInfo(roomId), String.valueOf(index), userName);
-        //房间玩家信息
-        jedisCluster.hset(redisKeyHashRoomPlayerInfo(roomId), userName, Constants.N);
         return true;
     }
 
@@ -161,8 +155,8 @@ public class MosaServiceImpl implements MosaService {
     public void leaveRoom(String roomId, String userName, String index) {
         //移除房间内当前位置信息
         jedisCluster.hdel(redisKeyHashRoomIndexInfo(roomId), index);
-        //移除房间内当前玩家信息
-        jedisCluster.hdel(redisKeyHashRoomPlayerInfo(roomId), userName);
+        //移除房间内当前玩家就绪信息
+        jedisCluster.srem(redisKeySetRoomReadyPlayers(roomId), userName);
         //移除缓存玩家信息
         jedisCluster.del(PlayerServiceImpl.redisKeyHashPlayerInfo(userName));
         //关闭房间
@@ -185,6 +179,26 @@ public class MosaServiceImpl implements MosaService {
                 }
             }
         }
+    }
+
+    @Override
+    public int beReady(String roomId, String userName) {
+        String key = redisKeySetRoomReadyPlayers(roomId);
+        jedisCluster.sadd(key, userName);
+        return jedisCluster.scard(key).intValue();
+    }
+
+    @Override
+    public int cancelReady(String roomId, String userName) {
+        String key = redisKeySetRoomReadyPlayers(roomId);
+        jedisCluster.srem(key, userName);
+        return jedisCluster.scard(key).intValue();
+    }
+
+    @Override
+    public boolean roundStart(String roomId) {
+        //TODO 牌局初始化
+        return false;
     }
 
     @Override

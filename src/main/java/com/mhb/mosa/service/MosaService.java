@@ -38,7 +38,7 @@ public interface MosaService {
     /**
      * 加入房间
      *
-     * @param roomId   房间号
+     * @param roomId   房间id
      * @param userName 用户名称
      * @return boolean
      */
@@ -47,7 +47,7 @@ public interface MosaService {
     /**
      * 离开房间
      *
-     * @param roomId   房间号
+     * @param roomId   房间id
      * @param userName 用户名称
      * @param index    用户房间位置
      * @return boolean
@@ -55,9 +55,29 @@ public interface MosaService {
     void leaveRoom(String roomId, String userName, String index);
 
     /**
+     * 准备就绪
+     *
+     * @param roomId   房间id
+     * @param userName 用户名称
+     * @return int
+     */
+    int beReady(String roomId, String userName);
+
+    /**
+     * 准备就绪
+     *
+     * @param roomId   房间id
+     * @param userName 用户名称
+     * @return int
+     */
+    int cancelReady(String roomId, String userName);
+
+    boolean roundStart(String roomId);
+
+    /**
      * 获取房间内玩家名称列表
      *
-     * @param roomId 房间号
+     * @param roomId 房间id
      * @return java.util.List<java.lang.String>
      */
     List<String> listUserNameInRoom(String roomId);

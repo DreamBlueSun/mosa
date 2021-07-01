@@ -16,11 +16,6 @@ import java.util.stream.Collectors;
 public class MosaVO {
 
     /**
-     * 类型（0：消息触发对象==userName，1：消息触发对象!=userName）
-     */
-    private Integer type;
-
-    /**
      * 房间id
      */
     private String roomId;
@@ -41,9 +36,18 @@ public class MosaVO {
     private String msg;
 
     /**
+     * 类型
+     * 0：自身加入房间动作（表示是自身加入房间,需要填充其他玩家信息）
+     * 1：准备就绪动作（表示全部玩家都已准备就绪，需要填充玩家手牌、当前出牌位置等信息）
+     */
+    private Integer type;
+
+    /**
      * 其他玩家信息
      */
     private List<MosaVOPlayer> players;
+
+
 
     public MosaVO(PlayerMosa player, String msg) {
         this.msg = msg;
