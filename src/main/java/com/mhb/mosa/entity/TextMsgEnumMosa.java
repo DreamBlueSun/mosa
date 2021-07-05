@@ -91,11 +91,12 @@ public enum TextMsgEnumMosa implements Handle {
                 });
                 PlayerMosa player = (PlayerMosa) PlayerHome.get(session.getId());
                 int ready = StaticUtils.mosaService.beReady(player.getRoomId(), player.getUserName());
+                MosaVO data = new MosaVO(player, player.getUserName() + "准备就绪");
+                msg.setData(data);
                 if (ready < MosaServiceImpl.ROOM_PLAYER_COUNT_MAX) {
-                    msg.setData(new MosaVO(player, player.getUserName() + "准备就绪"));
+                    ChatFunctionUtils.sendAll(player, JSON.toJSONString(msg));
                 } else {
                     StaticUtils.mosaService.roundStart(player.getRoomId());
-                    MosaVO data = msg.getData();
                     data.fillPlayers().fillPlayersHandCards();
                     ChatFunctionUtils.send(player, JSON.toJSONString(msg));
                     for (int i = 0; i < data.getPlayers().size(); i++) {
@@ -108,7 +109,6 @@ public enum TextMsgEnumMosa implements Handle {
                         }
                     }
                 }
-                ChatFunctionUtils.sendAll(player, JSON.toJSONString(msg));
             } catch (IOException e) {
                 log.error("准备就绪-" + json + "-异常：", e);
             }
