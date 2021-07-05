@@ -18,8 +18,8 @@ public class MosaVOPlayer {
      */
     private Integer index;
 
-    public MosaVOPlayer(String userName, Integer index) {
-        this.userName = userName;
-        this.index = index;
-    }
+    /**
+     * 手牌数
+     */
+    private Integer handNum;
 }

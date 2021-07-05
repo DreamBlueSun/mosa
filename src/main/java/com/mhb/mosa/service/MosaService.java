@@ -72,6 +72,12 @@ public interface MosaService {
      */
     int cancelReady(String roomId, String userName);
 
+    /**
+     * 开始
+     *
+     * @param roomId 房间id
+     * @return boolean
+     */
     boolean roundStart(String roomId);
 
     /**

@@ -10,10 +10,12 @@ import com.mhb.mosa.util.ChatFunctionUtils;
 import com.mhb.mosa.util.StaticUtils;
 import com.mhb.mosa.vo.MosaVO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @date: 2021/5/21 18:05
@@ -92,8 +94,19 @@ public enum TextMsgEnumMosa implements Handle {
                 if (ready < MosaServiceImpl.ROOM_PLAYER_COUNT_MAX) {
                     msg.setData(new MosaVO(player, player.getUserName() + "准备就绪"));
                 } else {
-                    //TODO 牌局初始化
-
+                    StaticUtils.mosaService.roundStart(player.getRoomId());
+                    MosaVO data = msg.getData();
+                    data.fillPlayers().fillPlayersHandCards();
+                    ChatFunctionUtils.send(player, JSON.toJSONString(msg));
+                    for (int i = 0; i < data.getPlayers().size(); i++) {
+                        MosaVO aNew = data.otherPlayersHandCards(i);
+                        List<String> list = StaticUtils.playerService.getProperties(aNew.getUserName(), "sessionId");
+                        if (CollectionUtils.isNotEmpty(list)) {
+                            msg.setData(aNew);
+                            PlayerMosa aPlayer = (PlayerMosa) PlayerHome.get(list.get(0));
+                            ChatFunctionUtils.send(aPlayer, JSON.toJSONString(msg));
+                        }
+                    }
                 }
                 ChatFunctionUtils.sendAll(player, JSON.toJSONString(msg));
             } catch (IOException e) {

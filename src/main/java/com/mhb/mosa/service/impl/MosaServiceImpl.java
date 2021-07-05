@@ -83,8 +83,33 @@ public class MosaServiceImpl implements MosaService {
      *
      * @return java.lang.String
      */
-    public static String redisKeySetRoomReadyPlayers(String roomId) {
+    private static String redisKeySetRoomReadyPlayers(String roomId) {
         return "{mosa}:r:k:set:r:r:p:" + roomId;
+    }
+
+    /**
+     * 缓存key：房间牌库卡牌列表
+     * list
+     * value：卡牌集合
+     *
+     * @param roomId 房间id
+     * @return java.lang.String
+     */
+    public static String redisKeyListRoomLibraryCards(String roomId) {
+        return "{mosa}:r:k:list:r:l:c:" + roomId;
+    }
+
+    /**
+     * 缓存key：房间玩家手牌列表
+     * list
+     * value：卡牌集合
+     *
+     * @param roomId   房间id
+     * @param userName 玩家名称
+     * @return java.lang.String
+     */
+    public static String redisKeyListRoomPlayerHandCards(String roomId, String userName) {
+        return "{mosa}:r:k:list:r:p:h:c:" + roomId + ":" + userName;
     }
 
     /**
@@ -197,7 +222,9 @@ public class MosaServiceImpl implements MosaService {
 
     @Override
     public boolean roundStart(String roomId) {
-        //TODO 牌局初始化
+        //TODO 开始
+        //牌库初始化
+        //手牌初始化
         return false;
     }
 

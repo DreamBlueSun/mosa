@@ -48,7 +48,9 @@ public class JedisUtils {
      * @return java.lang.String
      */
     public String hmset(final String key, final Object bean) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        return jedisCluster.hmset(key, BeanUtils.describe(bean));
+        Map<String, String> map = BeanUtils.describe(bean);
+        map.remove("class");
+        return jedisCluster.hmset(key, map);
     }
 
     /**
